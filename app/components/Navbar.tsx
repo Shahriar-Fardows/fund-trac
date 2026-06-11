@@ -37,7 +37,7 @@ export default function Navbar() {
 
   useEffect(() => {
     // Fetch notifications dynamically based on active month
-    if (!selectedMonth) return;
+    if (!selectedMonth || !user) return;
 
     const fetchAlerts = async () => {
       try {
@@ -55,7 +55,9 @@ export default function Navbar() {
     // Poll alerts every 30 seconds
     const interval = setInterval(fetchAlerts, 30000);
     return () => clearInterval(interval);
-  }, [selectedMonth]);
+  }, [selectedMonth, user]);
+
+
 
   return (
     <header className="h-16 border-b border-zinc-200 bg-white flex items-center justify-between px-8 fixed top-0 right-0 left-64 z-10">

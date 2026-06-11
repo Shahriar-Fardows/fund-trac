@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import {
   RefreshCw, Plus, Trash2, DollarSign, Calendar,
   Tag, ArrowUpRight, ArrowDownRight, Clock, Save,
-  ShieldAlert, ChevronDown,
+  ShieldAlert, ChevronDown, Pencil,
 } from "lucide-react";
 
 const INCOME_CATEGORIES = ["Client Payment", "Product Sales", "Subscription Revenue", "Investment"];
@@ -45,6 +45,7 @@ export default function RecurringPage() {
   const [showForm, setShowForm] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [processMsg, setProcessMsg] = useState("");
+  const [editId, setEditId] = useState<string | null>(null);
 
   // Form fields
   const [type, setType] = useState<"income" | "expense">("expense");
@@ -82,6 +83,34 @@ export default function RecurringPage() {
     setCategory(t === "income" ? INCOME_CATEGORIES[0] : EXPENSE_CATEGORIES[0]);
   };
 
+  const resetForm = () => {
+    setAmount("");
+    setDescription("");
+    setProject("");
+    setClient("");
+    setType("expense");
+    setCategory(EXPENSE_CATEGORIES[0]);
+    setFrequency("monthly");
+    setStartDate(new Date().toISOString().substring(0, 10));
+    setEditId(null);
+    setError("");
+  };
+
+  const handleEdit = (item: Recurring) => {
+    setEditId(item._id);
+    setType(item.type);
+    setAmount(item.amount.toString());
+    setCategory(item.category);
+    setDescription(item.description);
+    setFrequency(item.frequency);
+    setStartDate(new Date(item.startDate).toISOString().substring(0, 10));
+    setProject(item.project || "");
+    setClient(item.client || "");
+    setError("");
+    setShowForm(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -93,8 +122,10 @@ export default function RecurringPage() {
 
     setIsSubmitting(true);
     try {
-      const res = await fetch("/api/recurring", {
-        method: "POST",
+      const url = editId ? `/api/recurring/${editId}` : "/api/recurring";
+      const method = editId ? "PUT" : "POST";
+      const res = await fetch(url, {
+        method,
         headers: {
           "Content-Type": "application/json",
           "x-user-role": user?.role || "",
@@ -110,7 +141,7 @@ export default function RecurringPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to save.");
 
-      setAmount(""); setDescription(""); setProject(""); setClient("");
+      resetForm();
       setShowForm(false);
       fetchItems();
     } catch (err: any) {
@@ -189,7 +220,18 @@ export default function RecurringPage() {
               </button>
               {user?.role === "admin" && (
                 <button
-                  onClick={() => { setShowForm(!showForm); setError(""); }}
+                  onClick={() => {
+                    if (showForm) {
+                      if (editId) {
+                        resetForm();
+                      } else {
+                        setShowForm(false);
+                      }
+                    } else {
+                      resetForm();
+                      setShowForm(true);
+                    }
+                  }}
                   className="flex items-center gap-2 px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-white rounded-lg text-sm font-semibold transition-colors shadow-sm"
                 >
                   <Plus className="w-4 h-4" />
@@ -209,9 +251,13 @@ export default function RecurringPage() {
           {showForm && user?.role === "admin" && (
             <div className="bg-white border border-zinc-200 rounded-2xl shadow-sm overflow-hidden">
               <div className="px-8 py-5 border-b border-zinc-100">
-                <h2 className="text-base font-bold text-zinc-900">New Recurring Transaction</h2>
+                <h2 className="text-base font-bold text-zinc-900">
+                  {editId ? "Edit Recurring Transaction" : "New Recurring Transaction"}
+                </h2>
                 <p className="text-xs text-zinc-500 mt-0.5">
-                  This will automatically add a transaction to the ledger at every interval.
+                  {editId
+                    ? "Modify this auto-recurring transaction schedule."
+                    : "This will automatically add a transaction to the ledger at every interval."}
                 </p>
               </div>
 
@@ -344,9 +390,11 @@ export default function RecurringPage() {
                   <button type="submit" disabled={isSubmitting}
                     className="flex items-center gap-2 px-6 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-white rounded-lg font-semibold text-sm transition-colors disabled:opacity-50">
                     <Save className="w-4 h-4" />
-                    {isSubmitting ? "Saving..." : "Save Recurring Schedule"}
+                    {editId
+                      ? (isSubmitting ? "Updating..." : "Update Schedule")
+                      : (isSubmitting ? "Saving..." : "Save Recurring Schedule")}
                   </button>
-                  <button type="button" onClick={() => { setShowForm(false); setError(""); }}
+                  <button type="button" onClick={() => { resetForm(); setShowForm(false); }}
                     className="px-6 py-2.5 border border-zinc-200 hover:bg-zinc-50 text-zinc-700 rounded-lg font-semibold text-sm transition-colors">
                     Cancel
                   </button>
@@ -426,13 +474,22 @@ export default function RecurringPage() {
                         </td>
                         {user?.role === "admin" && (
                           <td className="py-4 text-right pr-6">
-                            <button
-                              onClick={() => handleDelete(item._id)}
-                              className="p-1.5 text-zinc-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                              title="Stop this recurring schedule"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
+                            <div className="inline-flex gap-2">
+                              <button
+                                onClick={() => handleEdit(item)}
+                                className="p-1.5 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-md transition-colors"
+                                title="Edit this recurring schedule"
+                              >
+                                <Pencil className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => handleDelete(item._id)}
+                                className="p-1.5 text-zinc-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                                title="Stop this recurring schedule"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
                           </td>
                         )}
                       </tr>
