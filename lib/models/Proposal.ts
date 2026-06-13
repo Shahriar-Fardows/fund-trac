@@ -12,7 +12,9 @@ const ProposalSchema = new Schema(
     clientEmail: { type: String, required: true },
     projectName: { type: String },
     totalPrice: { type: Number, default: 0 },
+    discount: { type: Number, default: 0 },
     currency: { type: String, enum: ["BDT", "USD"], default: "USD" },
+    refundPolicy: { type: String },
 
     // The uploaded proposal PDF (base64 data URL)
     pdfFile: { type: String },
@@ -45,6 +47,10 @@ const ProposalSchema = new Schema(
   },
   { timestamps: true }
 );
+
+if (process.env.NODE_ENV === "development") {
+  delete mongoose.models.Proposal;
+}
 
 export default mongoose.models.Proposal ||
   mongoose.model("Proposal", ProposalSchema);

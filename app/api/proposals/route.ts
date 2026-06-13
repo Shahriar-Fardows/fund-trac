@@ -7,7 +7,7 @@ import { formatMoney } from "@/lib/proposal";
 
 const EDITABLE_FIELDS = [
   "clientName", "companyName", "clientPhone", "clientEmail",
-  "projectName", "totalPrice", "currency", "pdfFile", "pdfName",
+  "projectName", "totalPrice", "discount", "currency", "pdfFile", "pdfName", "refundPolicy",
 ] as const;
 
 export function pickProposalData(body: any) {
@@ -16,6 +16,8 @@ export function pickProposalData(body: any) {
     if (body[key] !== undefined) data[key] = body[key];
   }
   if (data.totalPrice !== undefined) data.totalPrice = Number(data.totalPrice) || 0;
+  if (data.discount !== undefined) data.discount = Number(data.discount) || 0;
+  if (data.refundPolicy !== undefined) data.refundPolicy = String(data.refundPolicy || "").trim();
   if (data.currency && data.currency !== "BDT" && data.currency !== "USD") data.currency = "USD";
   return data;
 }

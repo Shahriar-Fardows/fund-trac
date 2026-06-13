@@ -34,7 +34,7 @@ export default function PdfViewer({ data }: { data?: string }) {
         const pdf = await pdfjs.getDocument({ data: bytes }).promise;
         if (cancelled) return;
 
-        const width = container.clientWidth || 600;
+        const width = Math.max(container.clientWidth || 0, 1024);
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
         for (let i = 1; i <= pdf.numPages; i++) {

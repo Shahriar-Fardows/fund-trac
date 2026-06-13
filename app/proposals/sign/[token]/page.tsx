@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "next/navigation";
-import { Building, CheckCircle2, FileSignature, Loader2, XCircle, Eraser, Lock, Pencil, Upload, Type as TypeIcon } from "lucide-react";
+import { Building, CheckCircle2, FileSignature, Loader2, XCircle, Eraser, Lock, Pencil, Upload, Type as TypeIcon, ChevronRight, FileText, X } from "lucide-react";
 import PdfViewer from "@/app/components/PdfViewer";
 
 const generateTypedSignature = (name: string): string => {
@@ -37,10 +37,12 @@ interface Proposal {
   companyName?: string;
   projectName?: string;
   totalPrice?: number;
+  discount?: number;
   currency: string;
   pdfFile?: string;
   status: "draft" | "sent" | "viewed" | "signed" | "rejected";
   signerName?: string;
+  refundPolicy?: string;
 }
 
 function money(amount: number | undefined, currency: string) {
@@ -63,6 +65,7 @@ export default function SignProposalPage() {
 
   const [sigMode, setSigMode] = useState<"draw" | "type" | "upload">("draw");
   const [uploadedSig, setUploadedSig] = useState<string>("");
+  const [showPolicyModal, setShowPolicyModal] = useState(false);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const drawing = useRef(false);
@@ -143,6 +146,7 @@ export default function SignProposalPage() {
   };
 
   if (loading) return <div className="min-h-screen flex items-center justify-center bg-zinc-50"><Loader2 className="w-8 h-8 text-zinc-400 animate-spin" /></div>;
+
   if (notFound || !proposal) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-zinc-50 px-6">
@@ -160,7 +164,7 @@ export default function SignProposalPage() {
   if (result === "signed") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-zinc-50 px-6">
-        <div className="max-w-md w-full bg-white border border-zinc-200 rounded-2xl shadow-xl px-8 py-12 text-center space-y-6">
+        <div className="max-w-md w-full bg-white border border-zinc-200 rounded-lg shadow-xl px-8 py-10 text-center space-y-6">
           <div className="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center mx-auto animate-bounce">
             <CheckCircle2 className="w-10 h-10 text-emerald-600" />
           </div>
@@ -170,6 +174,39 @@ export default function SignProposalPage() {
               Thank you{nameForDisplay ? `, ${nameForDisplay}` : ""}! The signed proposal has been successfully submitted and a finalized PDF copy has been sent to your email.
             </p>
           </div>
+
+          <div className="border border-zinc-200 rounded-lg p-4 bg-zinc-50 text-left space-y-3">
+            <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Signed Details</h3>
+            <div className="text-xs space-y-1.5 text-zinc-700">
+              <div className="flex justify-between">
+                <span className="font-medium">Project:</span>
+                <span className="font-bold text-zinc-900">{proposal.projectName || "Proposal"}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">Subtotal:</span>
+                <span className="font-semibold text-zinc-900">{money(proposal.totalPrice, proposal.currency)}</span>
+              </div>
+              {proposal.discount ? (
+                <div className="flex justify-between text-red-500">
+                  <span className="font-medium">Discount:</span>
+                  <span className="font-semibold">-{money(proposal.discount, proposal.currency)}</span>
+                </div>
+              ) : null}
+              <div className="flex justify-between pt-1.5 border-t border-zinc-200 font-bold text-zinc-900 text-sm">
+                <span>Total Amount:</span>
+                <span>{money((proposal.totalPrice || 0) - (proposal.discount || 0), proposal.currency)}</span>
+              </div>
+            </div>
+            {proposal.refundPolicy && (
+              <div className="pt-2 border-t border-zinc-200">
+                <span className="block text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-1">Policy:</span>
+                <p className="text-[11px] text-zinc-600 bg-white border border-zinc-100 rounded-lg p-2 max-h-[80px] overflow-y-auto whitespace-pre-wrap leading-relaxed">
+                  {proposal.refundPolicy}
+                </p>
+              </div>
+            )}
+          </div>
+
           <p className="text-xs text-zinc-400">Powered by TEACHFOSYS · Fund Trac</p>
         </div>
       </div>
@@ -179,7 +216,7 @@ export default function SignProposalPage() {
   if (result === "rejected") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-zinc-50 px-6">
-        <div className="max-w-md w-full bg-white border border-zinc-200 rounded-2xl shadow-xl px-8 py-12 text-center space-y-6">
+        <div className="max-w-md w-full bg-white border border-zinc-200 rounded-lg shadow-xl px-8 py-12 text-center space-y-6">
           <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mx-auto">
             <XCircle className="w-10 h-10 text-red-500" />
           </div>
@@ -200,7 +237,7 @@ export default function SignProposalPage() {
 
   return (
     <div className="min-h-screen bg-zinc-50 py-10 px-6">
-      <div className="max-w-6xl mx-auto">
+      <div className="w-full mx-auto">
         {/* Brand + summary */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
@@ -216,7 +253,7 @@ export default function SignProposalPage() {
         {/* 2-grid: PDF | sign panel */}
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_400px] gap-6 items-start">
           {/* PDF */}
-          <div className="bg-white border border-zinc-200 rounded-2xl shadow-sm p-5">
+          <div className="bg-white border border-zinc-200 rounded-lg p-5">
             <div className="flex items-center gap-1.5 text-[11px] text-zinc-400 font-semibold mb-3">
               <Lock className="w-3.5 h-3.5" /> View only — download disabled
             </div>
@@ -225,18 +262,42 @@ export default function SignProposalPage() {
 
           {/* Sign panel */}
           <div className="lg:sticky lg:top-6 space-y-6">
-            <div className="bg-white border border-zinc-200 rounded-2xl shadow-sm px-6 py-5">
+            <div className="bg-white border border-zinc-200 rounded-lg px-6 py-5">
               <h1 className="text-lg font-bold text-zinc-900">{p.projectName || "Project Proposal"}</h1>
               <p className="text-sm text-zinc-500 mt-0.5">Prepared for {p.companyName || p.clientName}</p>
-              <div className="flex items-center justify-between mt-4 pt-4 border-t border-zinc-100">
-                <span className="text-xs font-semibold text-zinc-500 uppercase">Total</span>
-                <span className="text-xl font-bold text-zinc-900">{money(p.totalPrice, p.currency)}</span>
+              <div className="space-y-1.5 mt-4 pt-4 border-t border-zinc-100">
+                {p.discount ? (
+                  <>
+                    <div className="flex items-center justify-between text-xs font-semibold text-zinc-500">
+                      <span>Subtotal</span>
+                      <span>{money(p.totalPrice, p.currency)}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs font-semibold text-red-500">
+                      <span>Discount</span>
+                      <span>-{money(p.discount, p.currency)}</span>
+                    </div>
+                  </>
+                ) : null}
+                <div className="flex items-center justify-between font-bold text-zinc-900 text-lg pt-1 border-t border-dashed border-zinc-100">
+                  <span>Total</span>
+                  <span>{money((p.totalPrice || 0) - (p.discount || 0), p.currency)}</span>
+                </div>
               </div>
             </div>
 
-            <div className="bg-white border border-zinc-200 rounded-2xl shadow-sm px-6 py-6">
+            {p.refundPolicy && (
+              <button onClick={() => setShowPolicyModal(true)}
+                className="w-full flex items-center justify-between px-6 py-3.5 bg-white border border-zinc-200 hover:bg-zinc-50 text-zinc-700 rounded-lg text-xs font-bold transition-all shadow-sm cursor-pointer">
+                <span className="flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-zinc-400" /> View Policy
+                </span>
+                <ChevronRight className="w-4 h-4 text-zinc-400" />
+              </button>
+            )}
+
+            <div className="bg-white border border-zinc-200 rounded-lg px-6 py-6">
               <div className="space-y-4">
-                <h2 className="text-sm font-bold text-zinc-900">Sign this proposal</h2>
+                <h2 className="text-sm font-bold text-zinc-900 animate-pulse">Sign this proposal</h2>
                 {error && <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm font-medium">{error}</div>}
 
                 <div className="space-y-1.5">
@@ -245,42 +306,48 @@ export default function SignProposalPage() {
                     className="w-full px-4 py-2.5 border border-zinc-200 rounded-lg text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900 text-sm" />
                 </div>
 
-                {/* Signature: draw or upload */}
-                <div className="space-y-2">
+                <div className="space-y-2.5">
                   <div className="flex items-center justify-between">
                     <label className="text-sm font-semibold text-zinc-700">Signature</label>
-                    {sigMode === "draw" && <button onClick={clearPad} className="flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-900"><Eraser className="w-3.5 h-3.5" /> Clear</button>}
+                    {sigMode === "draw" && (
+                      <button onClick={clearPad} className="flex items-center gap-1 text-[11px] text-zinc-400 hover:text-zinc-900 font-semibold transition-colors">
+                        <Eraser className="w-3.5 h-3.5 text-zinc-400" /> Clear
+                      </button>
+                    )}
                   </div>
-                  <div className="flex gap-1.5 p-1 bg-zinc-100 rounded-xl">
+                  
+                  <div className="flex gap-1.5 p-1 bg-zinc-100 rounded-lg">
                     <button onClick={() => setSigMode("draw")} className={`${tab} ${sigMode === "draw" ? "bg-white shadow-sm text-zinc-900" : "text-zinc-500"}`}><Pencil className="w-3.5 h-3.5" /> Draw</button>
                     <button onClick={() => setSigMode("type")} className={`${tab} ${sigMode === "type" ? "bg-white shadow-sm text-zinc-900" : "text-zinc-500"}`}><TypeIcon className="w-3.5 h-3.5" /> Type</button>
                     <button onClick={() => setSigMode("upload")} className={`${tab} ${sigMode === "upload" ? "bg-white shadow-sm text-zinc-900" : "text-zinc-500"}`}><Upload className="w-3.5 h-3.5" /> Upload</button>
                   </div>
 
                   {sigMode === "draw" && (
-                    <>
+                    <div className="space-y-1.5">
                       <canvas ref={canvasRef} width={420} height={150}
                         onPointerDown={startDraw} onPointerMove={draw} onPointerUp={endDraw} onPointerLeave={endDraw}
                         className="w-full h-[150px] border border-zinc-300 rounded-lg bg-white touch-none cursor-crosshair" />
-                      <p className="text-[11px] text-zinc-400">Draw your signature using your mouse or finger.</p>
-                    </>
+                      <p className="text-[11px] text-zinc-400 font-medium">Draw your signature inside the area using your mouse, trackpad, or finger.</p>
+                    </div>
                   )}
                   {sigMode === "type" && (
-                    <>
+                    <div className="space-y-1.5">
                       <div className="w-full h-[150px] border border-zinc-300 rounded-lg bg-white flex items-center justify-center px-4 overflow-hidden select-none">
-                        <span className="text-3xl italic font-serif text-zinc-800 tracking-wide" style={{ fontFamily: "'Brush Script MT', 'cursive', 'Georgia', 'serif'" }}>
+                        <span className="text-3xl italic font-serif text-zinc-800 tracking-wide select-none" style={{ fontFamily: "'Brush Script MT', 'cursive', 'Georgia', 'serif'" }}>
                           {signerName.trim() || "Your Signature"}
                         </span>
                       </div>
-                      <p className="text-[11px] text-zinc-400">A beautiful handwriting style signature will be generated from your name.</p>
-                    </>
+                      <p className="text-[11px] text-zinc-400 font-medium">A beautiful handwritten signature will be auto-generated from your typed full name.</p>
+                    </div>
                   )}
                   {sigMode === "upload" && (
-                    <div>
+                    <div className="space-y-1.5">
                       {uploadedSig ? (
-                        <div className="flex items-center gap-3 border border-zinc-200 rounded-lg p-3">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={uploadedSig} alt="signature" className="h-16 bg-white border border-zinc-100 rounded p-1" />
+                        <div className="flex items-center justify-between border border-zinc-200 rounded-lg p-3 bg-zinc-50">
+                          <div className="flex items-center gap-3">
+                            <img src={uploadedSig} alt="signature" className="h-12 bg-white border border-zinc-100 rounded p-1 shadow-sm" />
+                            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Image Uploaded</span>
+                          </div>
                           <button onClick={() => setUploadedSig("")} className="text-xs font-semibold text-zinc-500 hover:text-red-600">Remove</button>
                         </div>
                       ) : (
@@ -294,18 +361,18 @@ export default function SignProposalPage() {
                   )}
                 </div>
 
-                <label className="flex items-start gap-2.5 text-sm text-zinc-600 cursor-pointer">
-                  <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-0.5 w-4 h-4 accent-zinc-900" />
+                <label className="flex items-start gap-2.5 text-sm text-zinc-600 cursor-pointer select-none">
+                  <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-0.5 w-4 h-4 accent-zinc-900 cursor-pointer" />
                   <span>I have reviewed and agree to the terms of this proposal. I understand that signing is legally binding.</span>
                 </label>
 
                 <div className="flex items-center gap-3">
                   <button onClick={() => submit("sign")} disabled={submitting}
-                    className="flex items-center justify-center gap-2 flex-1 px-6 py-3 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl font-bold text-sm transition-colors disabled:opacity-50">
-                    {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <><FileSignature className="w-4 h-4" /> Sign &amp; Accept</>}
+                    className="flex items-center justify-center gap-2 flex-1 px-6 py-3 bg-zinc-900 hover:bg-zinc-800 text-white rounded-lg font-bold text-sm transition-colors disabled:opacity-50 cursor-pointer">
+                    {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <><FileSignature className="w-4 h-4" /> SIGN &amp; ACCEPT</>}
                   </button>
                   <button onClick={() => submit("reject")} disabled={submitting}
-                    className="flex items-center justify-center gap-2 px-5 py-3 border border-zinc-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200 text-zinc-600 rounded-xl font-semibold text-sm transition-colors disabled:opacity-50">
+                    className="flex items-center justify-center gap-2 px-5 py-3 border border-zinc-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200 text-zinc-600 rounded-lg font-semibold text-sm transition-colors disabled:opacity-50 cursor-pointer">
                     <XCircle className="w-4 h-4" /> Reject
                   </button>
                 </div>
@@ -316,18 +383,31 @@ export default function SignProposalPage() {
           </div>
         </div>
       </div>
-    </div>
-  );
-}
 
-function Done({ icon, title, text }: { icon: "ok" | "no"; title: string; text: string }) {
-  return (
-    <div className="text-center py-4">
-      <div className={`w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3 ${icon === "ok" ? "bg-emerald-50" : "bg-red-50"}`}>
-        {icon === "ok" ? <CheckCircle2 className="w-8 h-8 text-emerald-600" /> : <XCircle className="w-8 h-8 text-red-500" />}
-      </div>
-      <h2 className="text-lg font-bold text-zinc-900">{title}</h2>
-      <p className="text-sm text-zinc-500 mt-1">{text}</p>
+      {showPolicyModal && p.refundPolicy && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4" onClick={() => setShowPolicyModal(false)}>
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px]" />
+          <div className="relative w-full max-w-lg bg-white border border-zinc-200 rounded-lg shadow-2xl flex flex-col p-6 space-y-4" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
+              <div className="flex items-center gap-2">
+                <FileText className="w-4.5 h-4.5 text-zinc-500" />
+                <h2 className="text-sm font-bold text-zinc-900">Policy</h2>
+              </div>
+              <button onClick={() => setShowPolicyModal(false)} className="p-1.5 hover:bg-zinc-100 text-zinc-500 hover:text-zinc-900 rounded-md transition-colors cursor-pointer">
+                <X className="w-4.5 h-4.5" />
+              </button>
+            </div>
+            <div className="text-xs text-zinc-600 bg-zinc-50 border border-zinc-150/80 rounded-lg p-4 whitespace-pre-wrap leading-relaxed max-h-[300px] overflow-y-auto">
+              {p.refundPolicy}
+            </div>
+            <div className="flex justify-end pt-2">
+              <button onClick={() => setShowPolicyModal(false)} className="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-white rounded-lg text-xs font-bold shadow-sm transition-colors cursor-pointer">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

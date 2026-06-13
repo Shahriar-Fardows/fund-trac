@@ -14,9 +14,11 @@ export interface ProposalData {
   clientEmail?: string;
   projectName?: string;
   totalPrice?: number;
+  discount?: number;
   currency?: "BDT" | "USD";
   pdfFile?: string;
   pdfName?: string;
+  refundPolicy?: string;
 }
 
 const CANVA_COVER_URL =
@@ -139,20 +141,47 @@ export default function ProposalForm({ initial }: { initial?: ProposalData }) {
         </div>
 
         {/* Project + price */}
-        <div className="grid grid-cols-[1fr_160px_120px] gap-5">
-          <Field label="Project Name" icon={<FileText className="w-4 h-4" />}>
-            <input className={field} value={form.projectName || ""} onChange={(e) => set("projectName", e.target.value)} placeholder="Website Development" />
-          </Field>
-          <Field label="Total Price" icon={<DollarSign className="w-4 h-4" />}>
-            <input type="number" className={field} value={form.totalPrice ?? ""} onChange={(e) => set("totalPrice", Number(e.target.value))} placeholder="1200" />
-          </Field>
-          <div className="space-y-1.5">
-            <label className="text-sm font-semibold text-zinc-700">Currency</label>
-            <select className="w-full px-3 py-2.5 border border-zinc-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900"
-              value={form.currency} onChange={(e) => set("currency", e.target.value)}>
-              <option value="USD">USD ($)</option>
-              <option value="BDT">BDT (Tk)</option>
-            </select>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
+          <div className="md:col-span-2">
+            <Field label="Project Name" icon={<FileText className="w-4 h-4" />}>
+              <input className={field} value={form.projectName || ""} onChange={(e) => set("projectName", e.target.value)} placeholder="Website Development" />
+            </Field>
+          </div>
+          <div>
+            <Field label="Total Price" icon={<DollarSign className="w-4 h-4" />}>
+              <input type="number" className={field} value={form.totalPrice ?? ""} onChange={(e) => set("totalPrice", Number(e.target.value))} placeholder="1200" />
+            </Field>
+          </div>
+          <div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-semibold text-zinc-700">Currency</label>
+              <select className="w-full px-3 py-2.5 border border-zinc-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900"
+                value={form.currency} onChange={(e) => set("currency", e.target.value)}>
+                <option value="USD">USD ($)</option>
+                <option value="BDT">BDT (Tk)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Discount + Refund Policy */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
+          <div>
+            <Field label="Discount" icon={<DollarSign className="w-4 h-4" />}>
+              <input type="number" className={field} value={form.discount ?? ""} onChange={(e) => set("discount", Number(e.target.value) || 0)} placeholder="200" />
+            </Field>
+          </div>
+          <div className="md:col-span-3">
+            <div className="space-y-1.5">
+              <label className="text-sm font-semibold text-zinc-700">Refund Policy</label>
+              <textarea 
+                className="w-full px-4 py-2 border border-zinc-200 rounded-lg text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900 text-sm bg-white"
+                value={form.refundPolicy || ""} 
+                onChange={(e) => set("refundPolicy", e.target.value)} 
+                placeholder="Enter refund policy/terms here (e.g. 'No refunds after work commences.')"
+                rows={2}
+              />
+            </div>
           </div>
         </div>
       </div>

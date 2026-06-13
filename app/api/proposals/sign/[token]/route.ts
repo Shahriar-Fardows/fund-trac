@@ -69,7 +69,7 @@ export async function POST(request: Request, { params }: { params: Promise<any> 
     // Auto-record income.
     const transaction = await Transaction.create({
       type: "income",
-      amount: proposal.totalPrice || 0,
+      amount: (proposal.totalPrice || 0) - (proposal.discount || 0),
       currency: proposal.currency,
       category: "Client Payment",
       description: `Signed proposal: ${proposal.projectName || proposal.proposalNumber}`,
@@ -109,7 +109,7 @@ export async function POST(request: Request, { params }: { params: Promise<any> 
     await AuditLog.create({
       userEmail: proposal.clientEmail, userName: signerName,
       action: "Signed Proposal",
-      details: `Client signed proposal ${proposal.proposalNumber || ""}. Auto-recorded income of ${formatMoney(proposal.totalPrice || 0, proposal.currency)}.`,
+      details: `Client signed proposal ${proposal.proposalNumber || ""}. Auto-recorded income of ${formatMoney((proposal.totalPrice || 0) - (proposal.discount || 0), proposal.currency)}.`,
     });
 
     return NextResponse.json({ success: true, status: "signed" });

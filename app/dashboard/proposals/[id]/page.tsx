@@ -18,10 +18,12 @@ interface Proposal {
   clientEmail: string;
   projectName?: string;
   totalPrice?: number;
+  discount?: number;
   currency: string;
   pdfFile?: string;
   pdfName?: string;
   status: "draft" | "sent" | "viewed" | "signed" | "rejected";
+  refundPolicy?: string;
   token: string;
   sentAt?: string;
   openedAt?: string;
@@ -139,11 +141,26 @@ export default function ProposalDetailPage() {
                   {p.companyName && <KV k="Company" v={p.companyName} />}
                   {p.clientPhone && <KV k="Phone" v={p.clientPhone} />}
                   <KV k="Email" v={p.clientEmail} />
+                  {p.discount ? (
+                    <>
+                      <KV k="Subtotal" v={formatMoney(p.totalPrice || 0, p.currency)} />
+                      <KV k="Discount" v={`-${formatMoney(p.discount, p.currency)}`} />
+                    </>
+                  ) : null}
                   <div className="flex justify-between pt-1.5 border-t border-zinc-100 font-bold text-zinc-900">
-                    <span>Total</span><span>{formatMoney(p.totalPrice || 0, p.currency)}</span>
+                    <span>Total</span><span>{formatMoney((p.totalPrice || 0) - (p.discount || 0), p.currency)}</span>
                   </div>
                 </div>
               </div>
+
+              {p.refundPolicy && (
+                <div className="bg-white border border-zinc-200 rounded-2xl shadow-sm p-6 space-y-2">
+                  <h2 className="text-sm font-bold text-zinc-900">Refund Policy</h2>
+                  <p className="text-xs text-zinc-600 bg-zinc-50 border border-zinc-100 rounded-lg p-3 whitespace-pre-wrap leading-relaxed">
+                    {p.refundPolicy}
+                  </p>
+                </div>
+              )}
 
               <div className="bg-white border border-zinc-200 rounded-2xl shadow-sm p-6 space-y-4">
                 <h2 className="text-sm font-bold text-zinc-900">Send to Client</h2>

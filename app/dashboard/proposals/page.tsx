@@ -5,7 +5,7 @@ import { useUser } from "@/app/context/UserContext";
 import Sidebar from "@/app/components/Sidebar";
 import Navbar from "@/app/components/Navbar";
 import { useRouter } from "next/navigation";
-import { Plus, FileSignature, Trash2, Eye, CheckCircle2, Send, FileText, XCircle, MailOpen, X, ExternalLink, Lock } from "lucide-react";
+import { Plus, FileSignature, Trash2, Eye, CheckCircle2, Send, FileText, XCircle, MailOpen, X, ExternalLink, Lock, Pencil } from "lucide-react";
 import Swal from "sweetalert2";
 import PdfViewer from "@/app/components/PdfViewer";
 
@@ -196,6 +196,12 @@ export default function ProposalsPage() {
                               <Eye className="w-4 h-4" />
                             </button>
                             {user?.role === "admin" && p.status !== "signed" && (
+                              <button onClick={() => router.push(`/dashboard/proposals/${p._id}/edit`)}
+                                className="p-1.5 text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 rounded-md transition-colors" title="Edit">
+                                <Pencil className="w-4 h-4" />
+                              </button>
+                            )}
+                            {user?.role === "admin" && p.status !== "signed" && (
                               <button 
                                 onClick={() => handleQuickSend(p._id, p.clientEmail, p.projectName)}
                                 disabled={sendingId === p._id}
@@ -241,6 +247,12 @@ export default function ProposalsPage() {
                 </p>
               </div>
               <div className="flex items-center gap-2">
+                {user?.role === "admin" && !previewLoading && preview.status !== "signed" && (
+                  <button onClick={() => router.push(`/dashboard/proposals/${preview._id}/edit`)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 border border-zinc-200 hover:bg-zinc-50 text-zinc-700 rounded-lg text-xs font-semibold transition-colors">
+                    <Pencil className="w-3.5 h-3.5" /> Edit
+                  </button>
+                )}
                 <button onClick={() => router.push(`/dashboard/proposals/${preview._id}`)}
                   className="flex items-center gap-1.5 px-3 py-1.5 border border-zinc-200 hover:bg-zinc-50 text-zinc-700 rounded-lg text-xs font-semibold">
                   <ExternalLink className="w-3.5 h-3.5" /> Open full
