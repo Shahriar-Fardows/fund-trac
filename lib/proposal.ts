@@ -22,49 +22,140 @@ export function buildProposalEmailHtml(p: ProposalLike, signUrl: string): string
   const displayEmail = emailAddress.includes("@") && !emailAddress.includes(".com") && !emailAddress.includes(".org") && !emailAddress.includes(".net")
     ? `${emailAddress}.com`
     : emailAddress;
-  const phoneNumber = "+880 1700-000000";
+  const phoneNumber = "+880 1617-643566";
 
   return `
-  <div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;border:1px solid #e4e4e7;border-radius:14px;overflow:hidden;">
-    <div style="background:#18181b;padding:22px 28px;">
-      <span style="color:#22c55e;font-size:18px;font-weight:bold;">${escapeHtml(companyName)}</span>
-      <span style="color:#a1a1aa;font-size:11px;display:block;letter-spacing:1px;text-transform:uppercase;">Project Proposal</span>
-    </div>
-    <div style="padding:28px;color:#3f3f46;font-size:14px;line-height:1.6;">
-      <p style="color:#18181b;font-size:15px;font-weight:bold;margin:0 0 14px;">Hello ${escapeHtml(p.clientName)},</p>
-      
-      <p style="margin:0 0 14px;">Your project proposal is now ready for review.</p>
-      
-      <p style="margin:0 0 14px;">
-        Please take a moment to review the proposal online, where you can view the complete project scope, deliverables, timeline, pricing, and terms. If everything looks good, you can securely sign the proposal directly on the page.
-      </p>
-      
-      <p style="margin:0 0 14px;">
-        Once the proposal has been signed, a finalized PDF copy will be automatically generated and sent to your email for your records.
-      </p>
-      
-      <p style="margin:0 0 14px;">
-        If you have any questions or would like to discuss any part of the proposal, please feel free to reach out before signing.
-      </p>
-      
-      <p style="margin:0 0 20px;">We look forward to working with you.</p>
-      
-      <div style="margin-bottom:24px;">
-        <a href="${signUrl}" style="display:inline-block;background:#18181b;color:#fff;text-decoration:none;font-size:14px;font-weight:bold;padding:12px 26px;border-radius:9px;">
-          View &amp; Sign Proposal
-        </a>
+  <div style="background:#f4f4f5;padding:40px 20px;font-family:Arial,Helvetica,sans-serif;">
+    <div style="max-width:620px;margin:0 auto;background:#ffffff;border-radius:18px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.08);">
+
+      <!-- Header -->
+      <div style="background:linear-gradient(135deg,#18181b,#27272a);padding:35px 30px;text-align:center;">
+        <h1 style="margin:0;color:#ffffff;font-size:28px;">
+          ${escapeHtml(companyName)}
+        </h1>
+
+        <p style="margin:8px 0 0;color:#a1a1aa;font-size:13px;letter-spacing:1px;text-transform:uppercase;">
+          Project Proposal Ready
+        </p>
       </div>
-      
-      <p style="color:#71717a;font-size:12px;margin:0 0 24px;">Or copy this link to your browser:<br/>${signUrl}</p>
-      
-      <hr style="border:0;border-top:1px solid #e4e4e7;margin:20px 0;" />
-      
-      <p style="margin:0;color:#71717a;font-size:13px;line-height:1.5;">
-        Best regards,<br/><br/>
-        <strong style="color:#18181b;">${escapeHtml(companyName)}</strong><br/>
-        <a href="mailto:${displayEmail}" style="color:#2563eb;text-decoration:none;">${escapeHtml(displayEmail)}</a><br/>
-        <span>${escapeHtml(phoneNumber)}</span>
-      </p>
+
+      <!-- Body -->
+      <div style="padding:35px 30px;color:#3f3f46;line-height:1.7;">
+
+        <p style="font-size:16px;color:#18181b;margin-top:0;">
+          Hello <strong>${escapeHtml(p.clientName)}</strong>,
+        </p>
+
+        <p>
+          Thank you for considering us for your project.
+          Your proposal has been prepared and is ready for review.
+        </p>
+
+        <!-- Info Box -->
+        <div style="background:#fafafa;border:1px solid #e4e4e7;border-radius:12px;padding:18px;margin:25px 0;">
+          <p style="margin:0 0 10px;font-weight:bold;color:#18181b;">
+            Proposal Includes
+          </p>
+
+          <ul style="padding-left:18px;margin:0;color:#52525b;">
+            <li>Project Scope & Deliverables</li>
+            <li>Development Timeline</li>
+            <li>Pricing & Payment Schedule</li>
+            <li>Terms & Conditions</li>
+            <li>Digital Signature Approval</li>
+          </ul>
+        </div>
+
+        <p>
+          Please review the proposal carefully. If everything meets your expectations,
+          you can approve and sign it securely online.
+        </p>
+
+        <p>
+          After signing, a finalized PDF copy will automatically be generated and sent
+          to your email for future reference.
+        </p>
+
+        <!-- CTA -->
+        <div style="text-align:center;margin:35px 0;">
+          <a
+            href="${signUrl}"
+            style="
+              display:inline-block;
+              background:#18181b;
+              color:#ffffff;
+              text-decoration:none;
+              padding:15px 34px;
+              border-radius:10px;
+              font-size:15px;
+              font-weight:bold;
+            "
+          >
+            Review & Sign Proposal
+          </a>
+        </div>
+
+        <!-- Backup URL -->
+        <div style="background:#fafafa;border-radius:10px;padding:15px;">
+          <p style="margin:0 0 8px;font-size:13px;color:#71717a;">
+            If the button above does not work, copy and paste this link into your browser:
+          </p>
+
+          <p style="
+            margin:0;
+            font-size:13px;
+            word-break:break-all;
+            color:#2563eb;
+          ">
+            ${signUrl}
+          </p>
+        </div>
+
+        <!-- Trust Box -->
+        <div style="
+          margin-top:25px;
+          background:#f0fdf4;
+          border:1px solid #bbf7d0;
+          border-radius:10px;
+          padding:14px;
+        ">
+          <p style="margin:0;font-size:13px;color:#166534;">
+            ✓ Secure online signing<br>
+            ✓ Instant PDF copy after approval<br>
+            ✓ Accessible from any device
+          </p>
+        </div>
+
+        <p style="margin-top:30px;">
+          If you have any questions or would like any modifications before approval,
+          feel free to contact us.
+        </p>
+
+        <p>
+          We look forward to working with you.
+        </p>
+
+      </div>
+
+      <!-- Footer -->
+      <div style="border-top:1px solid #e4e4e7;padding:25px 30px;background:#fafafa;">
+
+        <p style="margin:0;font-size:14px;color:#18181b;">
+          <strong>${escapeHtml(companyName)}</strong>
+        </p>
+
+        <p style="margin:8px 0 0;font-size:13px;color:#71717a;">
+          <a href="mailto:${displayEmail}" style="color:#2563eb;text-decoration:none;">
+            ${escapeHtml(displayEmail)}
+          </a>
+        </p>
+
+        <p style="margin:5px 0 0;font-size:13px;color:#71717a;">
+          ${escapeHtml(phoneNumber)}
+        </p>
+
+      </div>
+
     </div>
   </div>
   <img src="${signUrl.replace("/proposals/sign/", "/api/proposals/track/")}" width="1" height="1" style="display:none" alt="" />`;
