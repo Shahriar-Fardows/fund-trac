@@ -9,6 +9,7 @@ import {
   Users, Plus, Trash2, Shield, Eye, Mail,
   User, Lock, ChevronLeft, Save, ShieldAlert,
 } from "lucide-react";
+import Swal from "sweetalert2";
 
 interface Member {
   _id: string;
@@ -99,7 +100,17 @@ export default function MembersPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Remove this member's access?")) return;
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Remove this member's access?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#71717a",
+      confirmButtonText: "Yes, remove access!",
+    });
+    if (!result.isConfirmed) return;
+
     try {
       const res = await fetch(`/api/users/${id}`, {
         method: "DELETE",
@@ -112,9 +123,20 @@ export default function MembersPage() {
         const data = await res.json();
         throw new Error(data.error || "Delete failed");
       }
+      Swal.fire({
+        title: "Removed!",
+        text: "The member's access has been removed.",
+        icon: "success",
+        confirmButtonColor: "#10b981",
+      });
       fetchMembers();
     } catch (err: any) {
-      alert(err.message);
+      Swal.fire({
+        title: "Error!",
+        text: err.message,
+        icon: "error",
+        confirmButtonColor: "#ef4444",
+      });
     }
   };
 

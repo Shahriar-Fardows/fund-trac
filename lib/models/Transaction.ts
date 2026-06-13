@@ -4,6 +4,7 @@ const TransactionSchema = new Schema(
   {
     type: { type: String, enum: ["income", "expense"], required: true },
     amount: { type: Number, required: true },
+    currency: { type: String, enum: ["BDT", "USD"], default: "BDT" },
     category: { type: String, required: true },
     description: { type: String, required: true },
     date: { type: Date, default: Date.now },

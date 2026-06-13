@@ -10,6 +10,7 @@ import {
   ArrowDownRight, Paperclip, Eye, X,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Swal from "sweetalert2";
 
 interface Transaction {
   _id: string;
@@ -66,7 +67,16 @@ export default function TransactionsPage() {
   useEffect(() => { fetchTransactions(); }, [search, filterType, filterCategory, startDate, endDate]);
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this transaction from the ledger?")) return;
+    const resConfirm = await Swal.fire({
+      title: "Delete transaction?",
+      text: "Are you sure you want to delete this transaction from the ledger?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#71717a",
+      confirmButtonText: "Yes, delete it",
+    });
+    if (!resConfirm.isConfirmed) return;
     try {
       const res = await fetch(`/api/transactions/${id}`, {
         method: "DELETE",
@@ -81,8 +91,15 @@ export default function TransactionsPage() {
         throw new Error(data.error || "Delete failed");
       }
       fetchTransactions();
+      Swal.fire({
+        title: "Deleted!",
+        text: "The transaction has been deleted.",
+        icon: "success",
+        timer: 1500,
+        showConfirmButton: false,
+      });
     } catch (err: any) {
-      alert(err.message);
+      Swal.fire("Error!", err.message, "error");
     }
   };
 

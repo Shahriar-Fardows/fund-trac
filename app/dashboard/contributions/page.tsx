@@ -6,6 +6,7 @@ import Sidebar from "@/app/components/Sidebar";
 import Navbar from "@/app/components/Navbar";
 import { Plus, Pencil, Trash2, Coins, Award } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Swal from "sweetalert2";
 
 interface Contribution {
   _id: string;
@@ -36,7 +37,16 @@ export default function ContributionsPage() {
   useEffect(() => { fetchContributions(); }, []);
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this contribution?")) return;
+    const resConfirm = await Swal.fire({
+      title: "Delete contribution?",
+      text: "Are you sure you want to delete this contribution?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#71717a",
+      confirmButtonText: "Yes, delete it",
+    });
+    if (!resConfirm.isConfirmed) return;
     try {
       const res = await fetch(`/api/contributions/${id}`, {
         method: "DELETE",
@@ -51,8 +61,15 @@ export default function ContributionsPage() {
         throw new Error(data.error || "Delete failed");
       }
       fetchContributions();
+      Swal.fire({
+        title: "Deleted!",
+        text: "The contribution has been deleted.",
+        icon: "success",
+        timer: 1500,
+        showConfirmButton: false,
+      });
     } catch (err: any) {
-      alert(err.message);
+      Swal.fire("Error!", err.message, "error");
     }
   };
 

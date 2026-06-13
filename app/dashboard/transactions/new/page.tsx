@@ -6,6 +6,7 @@ import Sidebar from "@/app/components/Sidebar";
 import Navbar from "@/app/components/Navbar";
 import { useRouter } from "next/navigation";
 import { DollarSign, Calendar, Tag, ChevronLeft, Save, Paperclip } from "lucide-react";
+import Swal from "sweetalert2";
 
 const INCOME_CATEGORIES = ["Client Payment", "Product Sales", "Subscription Revenue", "Investment"];
 const EXPENSE_CATEGORIES = [
@@ -41,7 +42,15 @@ export default function NewTransactionPage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 2 * 1024 * 1024) { alert("File size exceeds 2MB limit."); return; }
+    if (file.size > 2 * 1024 * 1024) {
+      Swal.fire({
+        title: "File too large",
+        text: "File size exceeds 2MB limit.",
+        icon: "warning",
+        confirmButtonColor: "#ef4444",
+      });
+      return;
+    }
     const reader = new FileReader();
     reader.onloadend = () => setReceiptImage(reader.result as string);
     reader.readAsDataURL(file);

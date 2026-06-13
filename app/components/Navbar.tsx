@@ -46,8 +46,13 @@ export default function Navbar() {
           const data = await response.json();
           setAlerts(data.alerts || []);
         }
-      } catch (e) {
-        console.error("Failed to load alerts", e);
+      } catch (e: any) {
+        const msg = e?.message || "";
+        if (e?.name === "TypeError" && (msg.includes("Failed to fetch") || msg.includes("fetch failed") || msg.includes("NetworkError"))) {
+          // Suppress error log when offline, during server compilation or restarts
+        } else {
+          console.error("Failed to load alerts", e);
+        }
       }
     };
 

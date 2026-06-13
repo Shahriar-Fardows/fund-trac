@@ -5,6 +5,7 @@ import { useUser } from "@/app/context/UserContext";
 import Sidebar from "@/app/components/Sidebar";
 import Navbar from "@/app/components/Navbar";
 import { useRouter } from "next/navigation";
+import Swal from "sweetalert2";
 import {
   RefreshCw, Plus, Trash2, DollarSign, Calendar,
   Tag, ArrowUpRight, ArrowDownRight, Clock, Save,
@@ -152,7 +153,17 @@ export default function RecurringPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Stop this recurring transaction? It will no longer auto-create entries.")) return;
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Stop this recurring transaction? It will no longer auto-create entries.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#71717a",
+      confirmButtonText: "Yes, stop it!",
+    });
+    if (!result.isConfirmed) return;
+
     try {
       const res = await fetch(`/api/recurring/${id}`, {
         method: "DELETE",
@@ -163,9 +174,20 @@ export default function RecurringPage() {
         },
       });
       if (!res.ok) throw new Error("Failed to delete.");
+      Swal.fire({
+        title: "Stopped!",
+        text: "The recurring transaction schedule has been stopped.",
+        icon: "success",
+        confirmButtonColor: "#10b981",
+      });
       fetchItems();
     } catch (err: any) {
-      alert(err.message);
+      Swal.fire({
+        title: "Error!",
+        text: err.message,
+        icon: "error",
+        confirmButtonColor: "#ef4444",
+      });
     }
   };
 
