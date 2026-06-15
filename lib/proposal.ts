@@ -218,3 +218,97 @@ export function buildSignNotificationHtml(
 function escapeHtml(value: string): string {
   return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
+
+/** Copy email sent to admin/archive after client signs (PDF attached). */
+export function buildAdminCopyEmailHtml(
+  p: ProposalLike & { _id?: any; proposalNumber?: string; signerIp?: string; discount?: number },
+  signedAt: Date,
+  baseUrl: string
+): string {
+  const companyName = process.env.COMPANY_NAME || "TEACHFOSYS";
+  return `
+  <div style="background-color: #f8fafc; padding: 40px 20px; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+    <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05); border: 1px solid #e2e8f0;">
+      
+      <!-- Header -->
+      <div style="background: linear-gradient(135deg, #0f172a, #1e293b); padding: 32px 24px; text-align: center; border-bottom: 4px solid #10b981;">
+        <h2 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 700; letter-spacing: -0.5px;">
+          ${escapeHtml(companyName)}
+        </h2>
+        <span style="display: inline-block; margin-top: 10px; background-color: rgba(16, 185, 129, 0.15); color: #34d399; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.3);">
+          Signed Copy (Admin Archive)
+        </span>
+      </div>
+
+      <!-- Body Content -->
+      <div style="padding: 32px 24px;">
+        <h3 style="margin-top: 0; margin-bottom: 8px; color: #0f172a; font-size: 18px; font-weight: 600;">
+          Proposal Signed & Recorded
+        </h3>
+        <p style="margin: 0 0 24px; color: #475569; font-size: 14px; line-height: 1.6;">
+          A copy of the signed proposal for <strong>${escapeHtml(p.projectName || "Project Proposal")}</strong> has been successfully archived. The details have been auto-recorded as a transaction.
+        </p>
+
+        <!-- Details Card -->
+        <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 28px;">
+          <h4 style="margin-top: 0; margin-bottom: 16px; color: #0f172a; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
+            Execution Details
+          </h4>
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+            <tbody>
+              ${p.proposalNumber ? `
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 10px 0; color: #64748b; font-weight: 500;">Proposal ID</td>
+                <td style="padding: 10px 0; text-align: right; color: #0f172a; font-weight: 600;">${escapeHtml(p.proposalNumber)}</td>
+              </tr>` : ""}
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 10px 0; color: #64748b; font-weight: 500;">Client Name</td>
+                <td style="padding: 10px 0; text-align: right; color: #0f172a; font-weight: 600;">${escapeHtml(p.clientName)}</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 10px 0; color: #64748b; font-weight: 500;">Client Email</td>
+                <td style="padding: 10px 0; text-align: right; color: #0f172a;">${escapeHtml(p.clientEmail)}</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 10px 0; color: #64748b; font-weight: 500;">Signed By</td>
+                <td style="padding: 10px 0; text-align: right; color: #10b981; font-weight: 600;">${escapeHtml(p.signerName || p.clientName)}</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 10px 0; color: #64748b; font-weight: 500;">Amount</td>
+                <td style="padding: 10px 0; text-align: right; color: #0f172a; font-weight: 700;">${formatMoney((p.totalPrice || 0) - (p.discount || 0), p.currency)}</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 10px 0; color: #64748b; font-weight: 500;">Signed At</td>
+                <td style="padding: 10px 0; text-align: right; color: #334155;">${escapeHtml(signedAt.toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" }))}</td>
+              </tr>
+              ${p.signerIp ? `
+              <tr>
+                <td style="padding: 10px 0; color: #64748b; font-weight: 500;">Signer IP</td>
+                <td style="padding: 10px 0; text-align: right; color: #475569; font-family: monospace;">${escapeHtml(p.signerIp)}</td>
+              </tr>` : ""}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Call to Action -->
+        ${p._id ? `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <a href="${baseUrl}/dashboard/proposals/${p._id}" style="display: inline-block; background-color: #0f172a; color: #ffffff; text-decoration: none; padding: 12px 28px; border-radius: 8px; font-size: 14px; font-weight: 600; box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.15); transition: background-color 0.2s;">
+            View Proposal in Dashboard
+          </a>
+        </div>` : ""}
+
+        <p style="margin: 0; color: #64748b; font-size: 13px; text-align: center; line-height: 1.5;">
+          The signed PDF copy is attached to this email. You can also view this proposal and its audit logs from the admin dashboard.
+        </p>
+      </div>
+
+      <!-- Footer -->
+      <div style="background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 20px 24px; text-align: center;">
+        <p style="margin: 0; font-size: 12px; color: #94a3b8;">
+          This is an automated system notification from Fund Trac.
+        </p>
+      </div>
+    </div>
+  </div>`;
+}

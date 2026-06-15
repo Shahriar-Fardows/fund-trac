@@ -4,8 +4,14 @@ import Proposal from "@/lib/models/Proposal";
 import Transaction from "@/lib/models/Transaction";
 import AuditLog from "@/lib/models/AuditLog";
 import { sendEmail } from "@/lib/email";
-import { buildSignedEmailHtml, buildSignNotificationHtml, formatMoney } from "@/lib/proposal";
+import { buildSignedEmailHtml, buildSignNotificationHtml, formatMoney, buildAdminCopyEmailHtml } from "@/lib/proposal";
 import { buildSignedPdfBase64 } from "@/lib/signedPdf";
+
+function getBaseUrl(request: Request): string {
+  const proto = request.headers.get("x-forwarded-proto") || "http";
+  const host = request.headers.get("host") || "localhost:3000";
+  return `${proto}://${host}`;
+}
 
 function clientIp(request: Request): string {
   const fwd = request.headers.get("x-forwarded-for");
@@ -115,11 +121,12 @@ export async function POST(request: Request, { params }: { params: Promise<any> 
 
       // Send copy to admin/CEO
       const copyEmail = process.env.PROPOSAL_COPY_EMAIL || "shahriar@teachfosys.com";
+      const baseUrl = getBaseUrl(request);
       try {
         await sendEmail({
           to: copyEmail,
           subject: `[Signed Copy] ${proposal.projectName || "Project Proposal"}`,
-          html: buildSignedEmailHtml(proposal),
+          html: buildAdminCopyEmailHtml(proposal, proposal.signedAt || new Date(), baseUrl),
           attachments: [{ filename: `${proposal.proposalNumber || "proposal"}-signed.pdf`, content: pdfBase64 }],
         });
       } catch (copyEmailErr: any) {

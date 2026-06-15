@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "@/app/components/Sidebar";
 import Navbar from "@/app/components/Navbar";
-import { ClipboardList, ShieldAlert, Sparkles, User, Calendar, Info } from "lucide-react";
+import { ClipboardList, ShieldAlert, Sparkles, User, Calendar, Info, Trash2 } from "lucide-react";
+import { useUser } from "@/app/context/UserContext";
 
 interface AuditLog {
   _id: string;
@@ -15,8 +16,39 @@ interface AuditLog {
 }
 
 export default function AuditLogsPage() {
+  const { user } = useUser();
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deleteLoadingId, setDeleteLoadingId] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+
+  const handleDeleteLog = async (id: string) => {
+    if (!window.confirm("Are you sure you want to delete this audit log entry?")) return;
+
+    try {
+      setDeleteLoadingId(id);
+      setActionError(null);
+      const res = await fetch(`/api/audit-logs/${id}`, {
+        method: "DELETE",
+        headers: {
+          "x-user-role": user?.role || "",
+          "x-user-email": user?.email || "",
+          "x-user-name": user?.name || "",
+        },
+      });
+
+      if (res.ok) {
+        fetchLogs();
+      } else {
+        const data = await res.json();
+        setActionError(data.error || "Failed to delete log entry.");
+      }
+    } catch (e: any) {
+      setActionError(e.message || "Connection error. Please try again.");
+    } finally {
+      setDeleteLoadingId(null);
+    }
+  };
 
   const fetchLogs = async () => {
     try {
@@ -64,6 +96,12 @@ export default function AuditLogsPage() {
             <p className="text-xs text-zinc-500 font-medium">Historical log of all modifications, additions, and settings updates</p>
           </div>
 
+          {actionError && (
+            <div className="bg-red-50 text-red-755 border border-red-200 px-4 py-3.5 rounded-xl text-xs font-semibold">
+              {actionError}
+            </div>
+          )}
+
           {/* Audit Logs Table */}
           <div className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm space-y-4">
             <div className="overflow-x-auto">
@@ -74,18 +112,19 @@ export default function AuditLogsPage() {
                     <th className="pb-3">User</th>
                     <th className="pb-3">Action</th>
                     <th className="pb-3">Log Details</th>
+                    {user?.email === "shahriar@teachfosys.com" && <th className="pb-3 text-right pr-2 w-16">Actions</th>}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-100 text-zinc-800">
                   {loading ? (
                     <tr>
-                      <td colSpan={4} className="py-6 text-center text-zinc-500">
+                      <td colSpan={user?.email === "shahriar@teachfosys.com" ? 5 : 4} className="py-6 text-center text-zinc-500">
                         Retrieving security audit trail...
                       </td>
                     </tr>
                   ) : logs.length === 0 ? (
                     <tr>
-                      <td colSpan={4} className="py-6 text-center text-zinc-400">
+                      <td colSpan={user?.email === "shahriar@teachfosys.com" ? 5 : 4} className="py-6 text-center text-zinc-400">
                         No logs recorded.
                       </td>
                     </tr>
@@ -135,6 +174,23 @@ export default function AuditLogsPage() {
                             <p className="leading-relaxed">{log.details}</p>
                           </div>
                         </td>
+
+                        {user?.email === "shahriar@teachfosys.com" && (
+                          <td className="py-3.5 text-right pr-2">
+                            <button
+                              onClick={() => handleDeleteLog(log._id)}
+                              disabled={deleteLoadingId === log._id}
+                              className="text-zinc-400 hover:text-red-600 p-1.5 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 inline-flex items-center justify-center"
+                              title="Delete Log Entry"
+                            >
+                              {deleteLoadingId === log._id ? (
+                                <div className="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin" />
+                              ) : (
+                                <Trash2 className="w-3.5 h-3.5" />
+                              )}
+                            </button>
+                          </td>
+                        )}
 
                       </tr>
                     ))
