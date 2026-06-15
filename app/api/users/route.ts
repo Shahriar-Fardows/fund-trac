@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import User from "@/lib/models/User";
+import { sendEmail } from "@/lib/email";
 
 export async function GET(request: Request) {
   try {
@@ -51,6 +52,40 @@ export async function POST(request: Request) {
       password,
       role: memberRole === "admin" ? "admin" : "viewer",
     });
+
+    // Send credentials email
+    const proto = request.headers.get("x-forwarded-proto") || "http";
+    const host = request.headers.get("host") || "localhost:3000";
+    const portalUrl = process.env.NEXT_PUBLIC_PORTAL_URL || `${proto}://${host}`;
+
+    try {
+      await sendEmail({
+        to: email,
+        subject: `Your ${process.env.COMPANY_NAME || "TEACHFOSYS"} Portal Account Credentials`,
+        html: `
+          <div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;border:1px solid #e4e4e7;border-radius:14px;overflow:hidden;">
+            <div style="background:#18181b;padding:22px 28px;text-align:center;">
+              <span style="color:#fff;font-size:18px;font-weight:bold;">Account Created</span>
+            </div>
+            <div style="padding:28px;color:#3f3f46;font-size:14px;line-height:1.6;">
+              <p>Hello <strong>${name}</strong>,</p>
+              <p>An administrator has created a team account for you on the Fund Trac Portal. You can log in using the credentials below:</p>
+              <div style="background:#fafafa;border:1px solid #e4e4e7;border-radius:10px;padding:18px;margin:20px 0;">
+                <table style="width:100%;font-size:14px;color:#3f3f46;border-collapse:collapse;">
+                  <tr><td style="padding:6px 0;color:#71717a;">Portal URL:</td><td style="padding:6px 0;font-weight:bold;color:#2563eb;"><a href="${portalUrl}" style="color:#2563eb;text-decoration:none;">${portalUrl}</a></td></tr>
+                  <tr><td style="padding:6px 0;color:#71717a;">Username/Email:</td><td style="padding:6px 0;font-weight:bold;color:#18181b;">${email}</td></tr>
+                  <tr><td style="padding:6px 0;color:#71717a;">Password:</td><td style="padding:6px 0;font-weight:bold;color:#18181b;">${password}</td></tr>
+                </table>
+              </div>
+              <p style="margin-top:20px;">For security, we recommend that you change your password once you log in by visiting your Profile page.</p>
+              <p style="margin-top:24px;font-size:12px;color:#a1a1aa;border-top:1px solid #e4e4e7;padding-top:16px;">Powered by TEACHFOSYS · Fund Trac</p>
+            </div>
+          </div>
+        `,
+      });
+    } catch (emailErr: any) {
+      console.error("Welcome email failed to send:", emailErr.message);
+    }
 
     return NextResponse.json(
       { _id: user._id, name: user.name, email: user.email, role: user.role },

@@ -22,10 +22,25 @@ export async function GET(request: Request, { params }: { params: Promise<any> }
     const proposal = await Proposal.findOne({ token }).select("-createdByEmail -createdByName");
     if (!proposal) return NextResponse.json({ error: "Proposal not found" }, { status: 404 });
 
+    let hasChanged = false;
+    if (!proposal.openedAt) {
+      proposal.openedAt = new Date();
+      hasChanged = true;
+    }
     if (!proposal.viewedAt) {
       proposal.viewedAt = new Date();
       if (proposal.status === "sent") proposal.status = "viewed";
+      hasChanged = true;
+    }
+
+    if (hasChanged) {
       await proposal.save();
+      await AuditLog.create({
+        userEmail: proposal.clientEmail,
+        userName: proposal.clientName,
+        action: "Opened Proposal",
+        details: `Client opened/viewed proposal ${proposal.proposalNumber || ""}.`,
+      });
     }
 
     return NextResponse.json(proposal);
