@@ -19,7 +19,7 @@ export async function PUT(
       return NextResponse.json({ error: "Unauthorized. Admin role required." }, { status: 403 });
     }
 
-    const { type, amount, category, description, date, receiptImage, client, project } = await request.json();
+    const { type, amount, category, description, date, receiptImage, client, project, status, receivedAmount } = await request.json();
 
     if (!type || !amount || !category || !description) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -30,17 +30,39 @@ export async function PUT(
       return NextResponse.json({ error: "Transaction not found" }, { status: 404 });
     }
 
+    // Block edit if already completed or refunded
+    if (oldTransaction.status === "completed" || oldTransaction.status === "refunded") {
+      return NextResponse.json({ error: "Completed or Refunded transactions cannot be edited." }, { status: 400 });
+    }
+
+    const numericAmount = Number(amount);
+    let resolvedStatus = status || oldTransaction.status || "completed";
+    let resolvedReceivedAmount = receivedAmount !== undefined ? Number(receivedAmount) : (oldTransaction.receivedAmount || 0);
+
+    if (resolvedStatus === "completed") {
+      resolvedReceivedAmount = numericAmount;
+    } else if (resolvedStatus === "pending") {
+      resolvedReceivedAmount = 0;
+    } else if (resolvedStatus === "partial") {
+      if (resolvedReceivedAmount >= numericAmount) {
+        resolvedStatus = "completed";
+        resolvedReceivedAmount = numericAmount;
+      }
+    }
+
     const transaction = await Transaction.findByIdAndUpdate(
       id,
       {
         type,
-        amount: Number(amount),
+        amount: numericAmount,
         category,
         description,
         date: date ? new Date(date) : oldTransaction.date,
         receiptImage,
         client,
         project,
+        status: resolvedStatus,
+        receivedAmount: resolvedReceivedAmount,
       },
       { new: true }
     );
@@ -78,6 +100,10 @@ export async function DELETE(
     const transaction = await Transaction.findById(id);
     if (!transaction) {
       return NextResponse.json({ error: "Transaction not found" }, { status: 404 });
+    }
+
+    if (transaction.status === "completed" || transaction.status === "refunded") {
+      return NextResponse.json({ error: "Completed or Refunded transactions cannot be deleted." }, { status: 400 });
     }
 
     await Transaction.findByIdAndDelete(id);

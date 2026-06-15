@@ -30,7 +30,7 @@ export async function GET(request: Request) {
     
     transactions.forEach((t) => {
       if (t.type === "income") {
-        totalIncome += t.amount;
+        totalIncome += t.receivedAmount !== undefined ? t.receivedAmount : t.amount;
       } else if (t.type === "expense") {
         totalExpense += t.amount;
       }
@@ -59,7 +59,7 @@ export async function GET(request: Request) {
       const tMonth = new Date(t.date).toISOString().substring(0, 7);
       if (tMonth === month) {
         if (t.type === "income") {
-          thisMonthIncome += t.amount;
+          thisMonthIncome += t.receivedAmount !== undefined ? t.receivedAmount : t.amount;
         } else if (t.type === "expense") {
           thisMonthExpense += t.amount;
         }
@@ -76,11 +76,13 @@ export async function GET(request: Request) {
       if (t.type === "expense") {
         expenseByCategory[t.category] = (expenseByCategory[t.category] || 0) + t.amount;
       } else {
-        incomeByCategory[t.category] = (incomeByCategory[t.category] || 0) + t.amount;
+        const received = t.receivedAmount !== undefined ? t.receivedAmount : t.amount;
+        incomeByCategory[t.category] = (incomeByCategory[t.category] || 0) + received;
       }
 
       if (t.client) {
-        clientRevenue[t.client] = (clientRevenue[t.client] || 0) + t.amount;
+        const val = t.type === "income" ? (t.receivedAmount !== undefined ? t.receivedAmount : t.amount) : t.amount;
+        clientRevenue[t.client] = (clientRevenue[t.client] || 0) + val;
       }
 
       if (t.project) {
@@ -88,7 +90,8 @@ export async function GET(request: Request) {
           projectProfitLoss[t.project] = { income: 0, expense: 0, net: 0 };
         }
         if (t.type === "income") {
-          projectProfitLoss[t.project].income += t.amount;
+          const received = t.receivedAmount !== undefined ? t.receivedAmount : t.amount;
+          projectProfitLoss[t.project].income += received;
         } else {
           projectProfitLoss[t.project].expense += t.amount;
         }
@@ -115,7 +118,7 @@ export async function GET(request: Request) {
       const tMonth = new Date(t.date).toISOString().substring(0, 7);
       if (monthlyData[tMonth]) {
         if (t.type === "income") {
-          monthlyData[tMonth].income += t.amount;
+          monthlyData[tMonth].income += t.receivedAmount !== undefined ? t.receivedAmount : t.amount;
         } else if (t.type === "expense") {
           monthlyData[tMonth].expense += t.amount;
         }

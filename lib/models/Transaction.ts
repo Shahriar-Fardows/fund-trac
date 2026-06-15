@@ -11,8 +11,18 @@ const TransactionSchema = new Schema(
     receiptImage: { type: String }, // Base64 image
     client: { type: String },
     project: { type: String },
+    status: {
+      type: String,
+      enum: ["pending", "partial", "completed", "refunded"],
+      default: "completed",
+    },
+    receivedAmount: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
+
+if (process.env.NODE_ENV === "development") {
+  delete mongoose.models.Transaction;
+}
 
 export default mongoose.models.Transaction || mongoose.model("Transaction", TransactionSchema);

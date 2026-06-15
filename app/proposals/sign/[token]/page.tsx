@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "next/navigation";
 import { Building, CheckCircle2, FileSignature, Loader2, XCircle, Eraser, Lock, Pencil, Upload, Type as TypeIcon, ChevronRight, FileText, X } from "lucide-react";
 import PdfViewer from "@/app/components/PdfViewer";
+import Confetti from "@/app/components/Confetti";
 
 const generateTypedSignature = (name: string): string => {
   const canvas = document.createElement("canvas");
@@ -163,51 +164,72 @@ export default function SignProposalPage() {
 
   if (result === "signed") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-zinc-50 px-6">
-        <div className="max-w-md w-full bg-white border border-zinc-200 rounded-lg shadow-xl px-8 py-10 text-center space-y-6">
-          <div className="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center mx-auto animate-bounce">
-            <CheckCircle2 className="w-10 h-10 text-emerald-600" />
+      <div className="relative min-h-screen flex items-center justify-center bg-zinc-50/50 px-6 py-12 overflow-hidden">
+        {/* Confetti Celebration */}
+        <Confetti />
+
+        {/* Ambient Glows */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-emerald-500/10 rounded-full blur-[140px] pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] bg-teal-500/5 rounded-full blur-[100px] pointer-events-none" />
+
+        {/* Card */}
+        <div className="relative max-w-md w-full bg-white/90 backdrop-blur-md border border-zinc-200/80 rounded-2xl shadow-[0_20px_50px_rgba(16,185,129,0.06)] px-8 py-10 text-center space-y-8 transition-all duration-300 hover:shadow-[0_25px_60px_rgba(16,185,129,0.09)]">
+          {/* Animated Success Badge */}
+          <div className="relative w-20 h-20 mx-auto flex items-center justify-center">
+            <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400/20 animate-ping opacity-75" />
+            <div className="relative w-16 h-16 rounded-full bg-linear-to-tr from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/25">
+              <CheckCircle2 className="w-8 h-8 text-white stroke-[2.5]" />
+            </div>
           </div>
-          <div className="space-y-2">
-            <h2 className="text-2xl font-bold text-zinc-950">Proposal Signed</h2>
-            <p className="text-sm text-zinc-500">
-              Thank you{nameForDisplay ? `, ${nameForDisplay}` : ""}! The signed proposal has been successfully submitted and a finalized PDF copy has been sent to your email.
+
+          <div className="space-y-3">
+            <h2 className="text-3xl font-extrabold text-zinc-900 tracking-tight">Proposal Signed!</h2>
+            <p className="text-sm text-zinc-500 max-w-sm mx-auto leading-relaxed">
+              Thank you{nameForDisplay ? `, ${nameForDisplay}` : ""}! The signed proposal has been successfully submitted, and a finalized PDF copy has been sent to your email.
             </p>
           </div>
 
-          <div className="border border-zinc-200 rounded-lg p-4 bg-zinc-50 text-left space-y-3">
-            <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Signed Details</h3>
-            <div className="text-xs space-y-1.5 text-zinc-700">
-              <div className="flex justify-between">
-                <span className="font-medium">Project:</span>
-                <span className="font-bold text-zinc-900">{proposal.projectName || "Proposal"}</span>
+          {/* Receipt Style Details Box */}
+          <div className="border border-zinc-200/80 rounded-xl p-5 bg-zinc-50/50 text-left space-y-4">
+            <div className="flex items-center justify-between border-b border-zinc-200/60 pb-3">
+              <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest">Signed Details</span>
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-850 border border-emerald-200">
+                <CheckCircle2 className="w-3.5 h-3.5" /> Signed
+              </span>
+            </div>
+
+            <div className="text-xs space-y-2.5 text-zinc-700">
+              <div className="flex justify-between items-baseline">
+                <span className="font-medium text-zinc-500">Project:</span>
+                <span className="font-bold text-zinc-900 truncate max-w-[180px]">{proposal.projectName || "Proposal"}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="font-medium">Subtotal:</span>
+              <div className="flex justify-between items-center">
+                <span className="font-medium text-zinc-500">Subtotal:</span>
                 <span className="font-semibold text-zinc-900">{money(proposal.totalPrice, proposal.currency)}</span>
               </div>
               {proposal.discount ? (
-                <div className="flex justify-between text-red-500">
-                  <span className="font-medium">Discount:</span>
+                <div className="flex justify-between items-center text-red-500 font-medium">
+                  <span>Discount:</span>
                   <span className="font-semibold">-{money(proposal.discount, proposal.currency)}</span>
                 </div>
               ) : null}
-              <div className="flex justify-between pt-1.5 border-t border-zinc-200 font-bold text-zinc-900 text-sm">
+              <div className="flex justify-between items-center pt-3 border-t border-dashed border-zinc-200/80 font-bold text-zinc-900 text-sm">
                 <span>Total Amount:</span>
-                <span>{money((proposal.totalPrice || 0) - (proposal.discount || 0), proposal.currency)}</span>
+                <span className="text-emerald-600 text-base">{money((proposal.totalPrice || 0) - (proposal.discount || 0), proposal.currency)}</span>
               </div>
             </div>
+
             {proposal.refundPolicy && (
-              <div className="pt-2 border-t border-zinc-200">
-                <span className="block text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-1">Policy:</span>
-                <p className="text-[11px] text-zinc-600 bg-white border border-zinc-100 rounded-lg p-2 max-h-[80px] overflow-y-auto whitespace-pre-wrap leading-relaxed">
+              <div className="pt-3 border-t border-zinc-200/60">
+                <span className="block text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-1.5">Policy / Terms:</span>
+                <p className="text-[11px] text-zinc-650 bg-white border border-zinc-150 rounded-lg p-2.5 max-h-[90px] overflow-y-auto whitespace-pre-wrap leading-relaxed">
                   {proposal.refundPolicy}
                 </p>
               </div>
             )}
           </div>
 
-          <p className="text-xs text-zinc-400">Powered by TEACHFOSYS · Fund Trac</p>
+          <p className="text-xs text-zinc-450 tracking-wider">Powered by TEACHFOSYS · Fund Trac</p>
         </div>
       </div>
     );

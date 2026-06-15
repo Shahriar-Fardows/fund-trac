@@ -30,6 +30,8 @@ export default function EditTransactionPage({ params }: { params: Promise<any> }
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState<"pending" | "partial" | "completed" | "refunded" | "">("");
+  const [receivedAmount, setReceivedAmount] = useState("");
 
   useEffect(() => {
     params.then(async (p) => {
@@ -40,10 +42,23 @@ export default function EditTransactionPage({ params }: { params: Promise<any> }
           const data = await res.json();
           const t = data.find((tx: any) => tx._id === p.id);
           if (t) {
+            if (t.status === "completed" || t.status === "refunded") {
+              Swal.fire({
+                title: "Locked Transaction",
+                text: "Completed or Refunded transactions are locked and cannot be edited.",
+                icon: "warning",
+                confirmButtonColor: "#18181b"
+              }).then(() => {
+                router.push("/dashboard/transactions");
+              });
+              return;
+            }
             setType(t.type); setAmount(t.amount.toString()); setCategory(t.category);
             setDescription(t.description);
             setDate(new Date(t.date).toISOString().substring(0, 10));
             setProject(t.project || ""); setClient(t.client || ""); setReceiptImage(t.receiptImage || "");
+            setStatus(t.status || "completed");
+            setReceivedAmount((t.receivedAmount || 0).toString());
           } else { router.push("/dashboard/transactions"); }
         }
       } catch { router.push("/dashboard/transactions"); }
@@ -95,6 +110,8 @@ export default function EditTransactionPage({ params }: { params: Promise<any> }
         body: JSON.stringify({
           type, amount: Number(amount), category, description,
           date, project, client: type === "income" ? client : "", receiptImage,
+          status,
+          receivedAmount: status === "completed" ? Number(amount) : (status === "pending" || status === "refunded" ? 0 : Number(receivedAmount)),
         }),
       });
       if (!res.ok) { const d = await res.json(); throw new Error(d.error || "Failed to update."); }
@@ -267,6 +284,42 @@ export default function EditTransactionPage({ params }: { params: Promise<any> }
                     </span>
                     <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
                   </label>
+                </div>
+              </div>
+
+              {/* Row 5: Status | Received Amount — 2 columns */}
+              <div className="grid grid-cols-2 gap-5">
+                <div className="space-y-1.5">
+                  <label className="text-sm font-semibold text-zinc-700" htmlFor="status">
+                    Payment Status <span className="text-red-500">*</span>
+                  </label>
+                  <select id="status" value={status}
+                    onChange={(e) => {
+                      const newStatus = e.target.value as any;
+                      setStatus(newStatus);
+                      if (newStatus === "completed") setReceivedAmount(amount);
+                      else if (newStatus === "pending") setReceivedAmount("0");
+                      else if (newStatus === "refunded") setReceivedAmount("0");
+                      else setReceivedAmount("");
+                    }}
+                    className={fieldClass}>
+                    <option value="completed">Completed</option>
+                    <option value="pending">Pending</option>
+                    <option value="partial">Partial</option>
+                    <option value="refunded">Refunded</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-sm font-semibold text-zinc-700" htmlFor="receivedAmount">
+                    Received Amount (BDT)
+                  </label>
+                  <input id="receivedAmount" type="number"
+                    value={status === "completed" ? amount : (status === "pending" || status === "refunded" ? "0" : receivedAmount)}
+                    onChange={(e) => setReceivedAmount(e.target.value)}
+                    disabled={status !== "partial"}
+                    placeholder={status === "completed" ? amount : (status === "pending" || status === "refunded" ? "0" : "Enter received amount")}
+                    className={`${fieldClass} disabled:bg-zinc-50 disabled:opacity-70 disabled:cursor-not-allowed`} />
                 </div>
               </div>
 

@@ -7,7 +7,8 @@ import Navbar from "@/app/components/Navbar";
 import {
   Plus, Pencil, Trash2, Search, Filter,
   FileSpreadsheet, FileText, ArrowUpRight,
-  ArrowDownRight, Paperclip, Eye, X,
+  ArrowDownRight, Paperclip, Eye, X, Lock,
+  Clock, Check, RotateCcw, CircleDot
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
@@ -22,6 +23,8 @@ interface Transaction {
   receiptImage?: string;
   client?: string;
   project?: string;
+  status: "pending" | "partial" | "completed" | "refunded";
+  receivedAmount?: number;
 }
 
 export default function TransactionsPage() {
@@ -234,6 +237,7 @@ export default function TransactionsPage() {
                   <tr className="border-b border-zinc-200 font-semibold text-zinc-500 uppercase">
                     <th className="pb-3 pl-2">Date</th>
                     <th className="pb-3">Type</th>
+                    <th className="pb-3">Status</th>
                     <th className="pb-3">Category</th>
                     <th className="pb-3">Description</th>
                     <th className="pb-3">Project / Client</th>
@@ -263,6 +267,44 @@ export default function TransactionsPage() {
                             {t.type}
                           </span>
                         </td>
+                        <td className="py-3.5">
+                          {(() => {
+                            const stat = t.status || "completed";
+                            if (stat === "completed") {
+                              return (
+                                <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
+                                  <Check className="w-3 h-3" />
+                                  Completed
+                                </span>
+                              );
+                            }
+                            if (stat === "pending") {
+                              return (
+                                <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+                                  <Clock className="w-3 h-3 animate-pulse" />
+                                  Pending
+                                </span>
+                              );
+                            }
+                            if (stat === "partial") {
+                              return (
+                                <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-800 border border-blue-200">
+                                  <CircleDot className="w-3 h-3" />
+                                  Partial
+                                </span>
+                              );
+                            }
+                            if (stat === "refunded") {
+                              return (
+                                <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-600 border border-zinc-200">
+                                  <RotateCcw className="w-3 h-3" />
+                                  Refunded
+                                </span>
+                              );
+                            }
+                            return null;
+                          })()}
+                        </td>
                         <td className="py-3.5 font-medium text-zinc-900">{t.category}</td>
                         <td className="py-3.5 text-zinc-600 max-w-xs truncate" title={t.description}>{t.description}</td>
                         <td className="py-3.5">
@@ -272,8 +314,17 @@ export default function TransactionsPage() {
                             {!t.project && !t.client && <span className="text-zinc-400">—</span>}
                           </div>
                         </td>
-                        <td className={`py-3.5 text-right font-bold ${t.type === "income" ? "text-emerald-700" : "text-red-700"}`}>
-                          {t.type === "income" ? "+" : "-"}{t.amount.toLocaleString()} BDT
+                        <td className="py-3.5 text-right">
+                          <div className="space-y-0.5">
+                            <span className={`block font-bold ${t.type === "income" ? "text-emerald-700" : "text-red-700"}`}>
+                              {t.type === "income" ? "+" : "-"}{t.amount.toLocaleString()} BDT
+                            </span>
+                            {t.type === "income" && (t.status === "pending" || t.status === "partial") && (
+                              <span className="block text-[10px] text-zinc-500 font-semibold">
+                                Received: {(t.receivedAmount || 0).toLocaleString()} BDT
+                              </span>
+                            )}
+                          </div>
                         </td>
                         <td className="py-3.5 text-center">
                           {t.receiptImage ? (
@@ -291,18 +342,28 @@ export default function TransactionsPage() {
                         {user?.role === "admin" && (
                           <td className="py-3.5 text-right pr-2">
                             <div className="inline-flex gap-2">
-                              <button
-                                onClick={() => router.push(`/dashboard/transactions/${t._id}/edit`)}
-                                className="p-1.5 text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 rounded-md transition-colors"
-                              >
-                                <Pencil className="w-4 h-4" />
-                              </button>
-                              <button
-                                onClick={() => handleDelete(t._id)}
-                                className="p-1.5 text-zinc-500 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
+                              {t.status === "completed" || t.status === "refunded" ? (
+                                <span className="p-1.5 text-zinc-300 cursor-not-allowed inline-block" title="Completed or Refunded transactions are locked.">
+                                  <Lock className="w-4 h-4 text-zinc-300" />
+                                </span>
+                              ) : (
+                                <>
+                                  <button
+                                    onClick={() => router.push(`/dashboard/transactions/${t._id}/edit`)}
+                                    className="p-1.5 text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 rounded-md transition-colors"
+                                    title="Edit"
+                                  >
+                                    <Pencil className="w-4 h-4" />
+                                  </button>
+                                  <button
+                                    onClick={() => handleDelete(t._id)}
+                                    className="p-1.5 text-zinc-500 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                                    title="Delete"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </button>
+                                </>
+                              )}
                             </div>
                           </td>
                         )}

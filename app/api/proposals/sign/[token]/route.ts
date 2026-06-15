@@ -76,6 +76,8 @@ export async function POST(request: Request, { params }: { params: Promise<any> 
       date: new Date(),
       client: proposal.clientName,
       project: proposal.projectName,
+      status: "pending",
+      receivedAmount: 0,
     });
     proposal.transactionId = String(transaction._id);
     await proposal.save();
@@ -83,14 +85,33 @@ export async function POST(request: Request, { params }: { params: Promise<any> 
     // Email signed PDF (original + appended signature page) to the client.
     try {
       const pdfBase64 = await buildSignedPdfBase64(proposal);
-      await sendEmail({
-        to: proposal.clientEmail,
-        subject: `Signed: ${proposal.projectName || "Project Proposal"}`,
-        html: buildSignedEmailHtml(proposal),
-        attachments: [{ filename: `${proposal.proposalNumber || "proposal"}-signed.pdf`, content: pdfBase64 }],
-      });
+      
+      // Send to client
+      try {
+        await sendEmail({
+          to: proposal.clientEmail,
+          subject: `Signed: ${proposal.projectName || "Project Proposal"}`,
+          html: buildSignedEmailHtml(proposal),
+          attachments: [{ filename: `${proposal.proposalNumber || "proposal"}-signed.pdf`, content: pdfBase64 }],
+        });
+      } catch (clientEmailErr: any) {
+        console.error("Client signed-proposal email failed:", clientEmailErr.message);
+      }
+
+      // Send copy to admin/CEO
+      const copyEmail = process.env.PROPOSAL_COPY_EMAIL || "shahriar@teachfosys.com";
+      try {
+        await sendEmail({
+          to: copyEmail,
+          subject: `[Signed Copy] ${proposal.projectName || "Project Proposal"}`,
+          html: buildSignedEmailHtml(proposal),
+          attachments: [{ filename: `${proposal.proposalNumber || "proposal"}-signed.pdf`, content: pdfBase64 }],
+        });
+      } catch (copyEmailErr: any) {
+        console.error("Copy signed-proposal email failed:", copyEmailErr.message);
+      }
     } catch (emailErr: any) {
-      console.error("Signed-proposal email failed:", emailErr.message);
+      console.error("Signed-proposal email flow failed:", emailErr.message);
     }
 
     // Notify the company CEO that a proposal was signed.

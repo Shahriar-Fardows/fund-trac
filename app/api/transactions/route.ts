@@ -61,21 +61,38 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized. Admin role required." }, { status: 403 });
     }
 
-    const { type, amount, category, description, date, receiptImage, client, project } = await request.json();
+    const { type, amount, category, description, date, receiptImage, client, project, status, receivedAmount } = await request.json();
 
     if (!type || !amount || !category || !description) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
+    const numericAmount = Number(amount);
+    let resolvedStatus = status || "completed";
+    let resolvedReceivedAmount = Number(receivedAmount) || 0;
+
+    if (resolvedStatus === "completed") {
+      resolvedReceivedAmount = numericAmount;
+    } else if (resolvedStatus === "pending") {
+      resolvedReceivedAmount = 0;
+    } else if (resolvedStatus === "partial") {
+      if (resolvedReceivedAmount >= numericAmount) {
+        resolvedStatus = "completed";
+        resolvedReceivedAmount = numericAmount;
+      }
+    }
+
     const transaction = await Transaction.create({
       type,
-      amount: Number(amount),
+      amount: numericAmount,
       category,
       description,
       date: date ? new Date(date) : new Date(),
-      receiptImage, // Base64 representation of attached file
+      receiptImage,
       client,
       project,
+      status: resolvedStatus,
+      receivedAmount: resolvedReceivedAmount,
     });
 
     // Create Audit Log
