@@ -30,6 +30,8 @@ export default function Navbar() {
         return "Monthly Budget Planning";
       case "/dashboard/audit-logs":
         return "Audit Trails";
+      case "/dashboard/project-plans":
+        return "Project Plans & Documents";
       default:
         return "Fund Trac";
     }

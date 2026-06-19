@@ -18,6 +18,7 @@ import {
   RefreshCw,
   FileSignature,
   Briefcase,
+  FileText,
 } from "lucide-react";
 
 export default function Sidebar() {
@@ -29,6 +30,7 @@ export default function Sidebar() {
     { name: "Contributions", path: "/dashboard/contributions", icon: Coins, adminOnly: false },
     { name: "Ledger", path: "/dashboard/transactions", icon: FileSpreadsheet, adminOnly: false },
     { name: "Proposals", path: "/dashboard/proposals", icon: FileSignature, adminOnly: false },
+    { name: "Project Plans", path: "/dashboard/project-plans", icon: FileText, adminOnly: false },
     { name: "Clients", path: "/dashboard/clients", icon: Briefcase, adminOnly: false },
     { name: "Recurring", path: "/dashboard/recurring", icon: RefreshCw, adminOnly: false },
     { name: "Budget Planning", path: "/dashboard/budgets", icon: PieChart, adminOnly: false },
