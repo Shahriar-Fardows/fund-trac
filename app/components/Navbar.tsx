@@ -33,7 +33,7 @@ export default function Navbar() {
       case "/dashboard/project-plans":
         return "Project Plans & Documents";
       default:
-        return "Fund Trac";
+        return "Teachfosys Finance";
     }
   };
 

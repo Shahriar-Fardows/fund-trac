@@ -229,7 +229,7 @@ export default function SignProposalPage() {
             )}
           </div>
 
-          <p className="text-xs text-zinc-450 tracking-wider">Powered by TEACHFOSYS · Fund Trac</p>
+          <p className="text-xs text-zinc-450 tracking-wider">Teachfosys Finance</p>
         </div>
       </div>
     );
@@ -248,7 +248,7 @@ export default function SignProposalPage() {
               You have rejected this proposal. The sender has been notified.
             </p>
           </div>
-          <p className="text-xs text-zinc-400">Powered by TEACHFOSYS · Fund Trac</p>
+          <p className="text-xs text-zinc-400">Teachfosys Finance</p>
         </div>
       </div>
     );
@@ -401,7 +401,7 @@ export default function SignProposalPage() {
               </div>
             </div>
 
-            <p className="text-center text-xs text-zinc-400">Powered by TEACHFOSYS · Fund Trac</p>
+            <p className="text-center text-xs text-zinc-400">Teachfosys Finance</p>
           </div>
         </div>
       </div>

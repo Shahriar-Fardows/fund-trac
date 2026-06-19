@@ -122,7 +122,7 @@ export default function TransactionsPage() {
       [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
     const link = document.createElement("a");
     link.setAttribute("href", encodeURI(csvContent));
-    link.setAttribute("download", `fund_trac_ledger_${new Date().toISOString().substring(0, 10)}.csv`);
+    link.setAttribute("download", `teachfosys_finance_ledger_${new Date().toISOString().substring(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -142,10 +142,10 @@ export default function TransactionsPage() {
         <td style="text-align:right;font-weight:bold;">${t.amount.toLocaleString()} BDT</td>
       </tr>`).join("");
     printWindow.document.write(`
-      <html><head><title>Fund Trac Ledger</title>
+      <html><head><title>Teachfosys Finance Ledger</title>
       <style>body{font-family:Arial,sans-serif;padding:20px}table{width:100%;border-collapse:collapse;font-size:12px}
       th,td{border-bottom:1px solid #ddd;padding:8px;text-align:left}th{background:#f5f5f5;font-weight:bold}</style></head>
-      <body><h1>Fund Trac Ledger Report</h1><h3 style="color:#666;font-weight:normal">Generated ${new Date().toLocaleDateString("en-GB")}</h3>
+      <body><h1>Teachfosys Finance Ledger Report</h1><h3 style="color:#666;font-weight:normal">Generated ${new Date().toLocaleDateString("en-GB")}</h3>
       <table><thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Description</th><th>Project</th><th>Client</th><th>Amount</th></tr></thead>
       <tbody>${tableRows}</tbody></table>
       <script>window.onload=function(){window.print();window.close()}<\/script></body></html>`);

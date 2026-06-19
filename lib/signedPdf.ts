@@ -344,12 +344,12 @@ export async function buildSignedPdfBase64(p: SignInfo): Promise<string> {
     color: rgb(161 / 255, 161 / 255, 170 / 255), // Zinc 400
   });
 
-  page.drawText("TEACHFOSYS · Fund Trac", {
-    x: W - M - 110,
+  page.drawText("TEACHFOSYS · Teachfosys Finance", {
+    x: W - M - 150,
     y: 36,
     size: 7.5,
     font: helvBold,
-    color: rgb(113 / 255, 113 / 255, 122 / 255), // Zinc 500
+    color: rgb(113 / 255, 113 / 255, 122 / 255), // Zinc 505
   });
 
   const out = await doc.save();

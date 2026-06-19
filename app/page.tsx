@@ -22,7 +22,7 @@ export default function Home() {
     <div className="flex min-h-screen items-center justify-center bg-white text-zinc-900">
       <div className="text-center">
         <div className="w-12 h-12 border-4 border-zinc-200 border-t-zinc-900 rounded-full animate-spin mx-auto mb-4"></div>
-        <p className="text-lg font-medium text-zinc-600">Loading Fund Trac...</p>
+        <p className="text-lg font-medium text-zinc-600">Loading Teachfosys Finance...</p>
       </div>
     </div>
   );

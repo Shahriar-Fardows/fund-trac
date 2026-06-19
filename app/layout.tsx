@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Fund Trac - Financial Dashboard",
-  description: "Advanced Financial Dashboard & Ledger Tracker",
+  title: "Teachfosys Finance - Financial Dashboard",
+  description: "Advanced Financial Dashboard & Ledger Tracker for TEACHFOSYS",
 };
 
 export default function RootLayout({

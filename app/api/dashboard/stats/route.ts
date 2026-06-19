@@ -151,17 +151,7 @@ export async function GET(request: Request) {
       }
     });
 
-    // Upcoming subscriptions alert (mock items for demo or actual categories)
-    // Find Software Subscription and Server / Hosting expenses and list them as upcoming renewals
-    const hostingExpenses = transactions.filter(t => t.category === "Server / Hosting" || t.category === "Software Subscription");
-    if (hostingExpenses.length > 0) {
-      const latestRenewal = hostingExpenses[0]; // or sort to find newest
-      alerts.push({
-        type: "info",
-        title: "Upcoming Subscription Renewal",
-        message: `Recurring payment for VPS/Hosting or Software Subscription is approaching within the next week.`,
-      });
-    }
+
 
     return NextResponse.json({
       summary: {

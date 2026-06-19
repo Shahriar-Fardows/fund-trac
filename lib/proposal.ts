@@ -210,7 +210,7 @@ export function buildSignNotificationHtml(
           ${p.signerIp ? `<tr><td style="padding:4px 0;color:#71717a;">IP</td><td style="padding:4px 0;text-align:right;color:#18181b;">${escapeHtml(p.signerIp)}</td></tr>` : ""}
         </table>
       </div>
-      <p style="color:#a1a1aa;font-size:12px;margin:16px 0 0;">The income has been auto-recorded in Fund Trac.</p>
+      <p style="color:#a1a1aa;font-size:12px;margin:16px 0 0;">The income has been auto-recorded in Teachfosys Finance.</p>
     </div>
   </div>`;
 }
@@ -306,7 +306,7 @@ export function buildAdminCopyEmailHtml(
       <!-- Footer -->
       <div style="background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 20px 24px; text-align: center;">
         <p style="margin: 0; font-size: 12px; color: #94a3b8;">
-          This is an automated system notification from Fund Trac.
+          This is an automated system notification from Teachfosys Finance.
         </p>
       </div>
     </div>

@@ -22,7 +22,7 @@ export async function PUT(request: Request, { params }: { params: Promise<any> }
     const { id } = await params;
 
     const role = request.headers.get("x-user-role");
-    const userEmail = request.headers.get("x-user-email") || "unknown@fundtrac.com";
+    const userEmail = request.headers.get("x-user-email") || "unknown@teachfosys.com";
     const userName = request.headers.get("x-user-name") || "System User";
     if (role !== "admin") return NextResponse.json({ error: "Unauthorized. Admin role required." }, { status: 403 });
 
@@ -53,7 +53,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<any
     const { id } = await params;
 
     const role = request.headers.get("x-user-role");
-    const userEmail = request.headers.get("x-user-email") || "unknown@fundtrac.com";
+    const userEmail = request.headers.get("x-user-email") || "unknown@teachfosys.com";
     const userName = request.headers.get("x-user-name") || "System User";
     if (role !== "admin") return NextResponse.json({ error: "Unauthorized. Admin role required." }, { status: 403 });
 

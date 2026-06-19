@@ -52,7 +52,7 @@ export default function Sidebar() {
           <Building className="w-5 h-5" />
         </div>
         <div>
-          <span className="font-bold text-lg text-zinc-900">Fund Trac</span>
+          <span className="font-bold text-lg text-zinc-900">TF Finance</span>
           <span className="block text-[10px] text-zinc-400 font-semibold tracking-wider uppercase">Finance Hub</span>
         </div>
       </div>

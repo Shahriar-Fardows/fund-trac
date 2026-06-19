@@ -39,7 +39,7 @@ export async function POST(request: Request) {
             </div>
             <div style="padding:28px;color:#3f3f46;font-size:14px;line-height:1.6;">
               <p>Hello <strong>${user.name}</strong>,</p>
-              <p>We received a request to reset your password for the Fund Trac Portal. Click the button below to choose a new password:</p>
+              <p>We received a request to reset your password for the Teachfosys Finance Portal. Click the button below to choose a new password:</p>
               <div style="text-align:center;margin:30px 0;">
                 <a href="${resetUrl}" style="display:inline-block;background:#18181b;color:#ffffff;text-decoration:none;padding:12px 28px;border-radius:8px;font-size:14px;font-weight:bold;">
                   Reset Password
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
               <p>If the button above does not work, copy and paste this link into your browser:</p>
               <p style="word-break:break-all;color:#2563eb;">${resetUrl}</p>
               <p style="margin-top:20px;font-size:12px;color:#71717a;">This link is valid for 1 hour. If you did not request a password reset, please ignore this email.</p>
-              <p style="margin-top:24px;font-size:12px;color:#a1a1aa;border-top:1px solid #e4e4e7;padding-top:16px;">Powered by TEACHFOSYS · Fund Trac</p>
+              <p style="margin-top:24px;font-size:12px;color:#a1a1aa;border-top:1px solid #e4e4e7;padding-top:16px;">Teachfosys Finance</p>
             </div>
           </div>
         `,

@@ -27,7 +27,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   try {
     await dbConnect();
     const role = request.headers.get("x-user-role");
-    const userEmail = request.headers.get("x-user-email") || "unknown@fundtrac.com";
+    const userEmail = request.headers.get("x-user-email") || "unknown@teachfosys.com";
     const userName = request.headers.get("x-user-name") || "System User";
 
     if (role !== "admin") {
@@ -80,7 +80,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
   try {
     await dbConnect();
     const role = request.headers.get("x-user-role");
-    const userEmail = request.headers.get("x-user-email") || "unknown@fundtrac.com";
+    const userEmail = request.headers.get("x-user-email") || "unknown@teachfosys.com";
     const userName = request.headers.get("x-user-name") || "System User";
 
     if (role !== "admin") {

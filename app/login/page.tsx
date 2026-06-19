@@ -70,7 +70,7 @@ export default function LoginPage() {
             <Shield className="w-6 h-6" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-zinc-900">
-            Welcome to Fund Trac
+            Welcome to Teachfosys Finance
           </h1>
           <p className="text-sm text-zinc-500">
             Sign in to manage and audit financial operations.

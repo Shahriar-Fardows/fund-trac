@@ -91,7 +91,7 @@ export default function SetupPage() {
             First-Time Setup
           </h1>
           <p className="text-sm text-zinc-500">
-            Create your admin account to get started with Fund Trac.
+            Create your admin account to get started with Teachfosys Finance.
           </p>
         </div>
 
