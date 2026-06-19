@@ -20,8 +20,44 @@ interface ProjectPlan {
   name: string;
   description: string;
   docLink: string;
+  status?: string;
   createdAt: string;
 }
+
+const getStatusConfig = (status?: string) => {
+  const s = (status || "Planning").toLowerCase();
+  switch (s) {
+    case "working":
+      return {
+        bg: "bg-blue-50 text-blue-700 border-blue-200/50",
+        hoverBorder: "hover:border-blue-400/80 hover:shadow-blue-500/10",
+        iconBg: "bg-blue-600 text-white shadow-blue-500/20",
+        indicator: "bg-blue-500",
+      };
+    case "implementation":
+      return {
+        bg: "bg-indigo-50 text-indigo-700 border-indigo-200/50",
+        hoverBorder: "hover:border-indigo-400/80 hover:shadow-indigo-500/10",
+        iconBg: "bg-indigo-600 text-white shadow-indigo-500/20",
+        indicator: "bg-indigo-500",
+      };
+    case "completed":
+      return {
+        bg: "bg-emerald-50 text-emerald-700 border-emerald-200/50",
+        hoverBorder: "hover:border-emerald-400/80 hover:shadow-emerald-500/10",
+        iconBg: "bg-emerald-500 text-white shadow-emerald-500/20",
+        indicator: "bg-emerald-500",
+      };
+    case "planning":
+    default:
+      return {
+        bg: "bg-amber-50 text-amber-700 border-amber-200/50",
+        hoverBorder: "hover:border-amber-400/80 hover:shadow-amber-500/10",
+        iconBg: "bg-amber-500 text-white shadow-amber-500/20",
+        indicator: "bg-amber-500",
+      };
+  }
+};
 
 export default function ProjectPlansPage() {
   const { user } = useUser();
@@ -36,6 +72,7 @@ export default function ProjectPlansPage() {
     name: "",
     description: "",
     docLink: "",
+    status: "Planning",
   });
 
   const fetchPlans = async () => {
@@ -66,7 +103,7 @@ export default function ProjectPlansPage() {
 
   const handleAddClick = () => {
     setEditingPlan(null);
-    setFormData({ name: "", description: "", docLink: "" });
+    setFormData({ name: "", description: "", docLink: "", status: "Planning" });
     setShowModal(true);
   };
 
@@ -76,6 +113,7 @@ export default function ProjectPlansPage() {
       name: plan.name,
       description: plan.description,
       docLink: plan.docLink,
+      status: plan.status || "Planning",
     });
     setShowModal(true);
   };
@@ -234,56 +272,66 @@ export default function ProjectPlansPage() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredPlans.map((plan) => (
-                  <div
-                    key={plan._id}
-                    className="group relative bg-white border border-zinc-200 rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-zinc-300/80"
-                  >
-                    <div className="space-y-4">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-zinc-900 text-white flex items-center justify-center shadow-md transition-transform duration-300 group-hover:scale-105">
-                            <FileText className="w-5 h-5" />
+                {filteredPlans.map((plan) => {
+                  const config = getStatusConfig(plan.status);
+                  return (
+                    <div
+                      key={plan._id}
+                      className={`group relative bg-white border border-zinc-200 rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${config.hoverBorder}`}
+                    >
+                      <div className="space-y-4">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-10 h-10 rounded-xl ${config.iconBg} flex items-center justify-center shadow-md transition-transform duration-300 group-hover:scale-105`}>
+                              <FileText className="w-5 h-5" />
+                            </div>
+                            <div className="min-w-0">
+                              <h3 className="font-bold text-base text-zinc-900 tracking-tight line-clamp-1 group-hover:text-zinc-950">
+                                {plan.name}
+                              </h3>
+                              <div className="flex items-center gap-1.5 mt-0.5">
+                                <span className="inline-block text-[11px] font-bold text-zinc-400 uppercase tracking-wider">
+                                  Document Plan
+                                </span>
+                              </div>
+                            </div>
                           </div>
-                          <div className="min-w-0">
-                            <h3 className="font-bold text-sm text-zinc-900 tracking-tight line-clamp-1 group-hover:text-zinc-950">
-                              {plan.name}
-                            </h3>
-                            <span className="inline-block text-[9px] font-bold text-zinc-400 uppercase tracking-wider mt-0.5">
-                              Document Plan
+                          <div className="flex flex-col items-end gap-1.5">
+                            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-wide uppercase border ${config.bg}`}>
+                              <span className={`w-1 h-1 rounded-full ${config.indicator}`} />
+                              {plan.status || "Planning"}
                             </span>
+                            {user?.role === "admin" && (
+                              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                <button
+                                  onClick={() => handleEditClick(plan)}
+                                  className="p-1.5 text-zinc-400 hover:text-zinc-950 hover:bg-zinc-50 rounded-lg transition-colors"
+                                  title="Edit Plan"
+                                >
+                                  <Edit2 className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteClick(plan)}
+                                  className="p-1.5 text-zinc-400 hover:text-red-650 hover:bg-red-50 rounded-lg transition-colors"
+                                  title="Delete Plan"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            )}
                           </div>
                         </div>
-                        {user?.role === "admin" && (
-                          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                            <button
-                              onClick={() => handleEditClick(plan)}
-                              className="p-1.5 text-zinc-400 hover:text-zinc-950 hover:bg-zinc-50 rounded-lg transition-colors"
-                              title="Edit Plan"
-                            >
-                              <Edit2 className="w-3.5 h-3.5" />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteClick(plan)}
-                              className="p-1.5 text-zinc-400 hover:text-red-650 hover:bg-red-50 rounded-lg transition-colors"
-                              title="Delete Plan"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                      <p className="text-xs text-zinc-600 leading-relaxed min-h-[48px] line-clamp-3">
+                      <p className="text-sm text-zinc-600 leading-relaxed min-h-[48px] line-clamp-3">
                         {plan.description}
                       </p>
                     </div>
 
                     <div className="mt-5 pt-4 border-t border-zinc-100 flex items-center justify-between">
                       <div className="flex flex-col">
-                        <span className="text-[9px] text-zinc-400 font-bold uppercase tracking-wider">
+                        <span className="text-[11px] text-zinc-400 font-bold uppercase tracking-wider">
                           Created Date
                         </span>
-                        <span className="text-xs text-zinc-700 font-semibold mt-0.5">
+                        <span className="text-sm text-zinc-700 font-semibold mt-0.5">
                           {new Date(plan.createdAt).toLocaleDateString("en-GB", {
                             day: "numeric",
                             month: "short",
@@ -295,13 +343,14 @@ export default function ProjectPlansPage() {
                         href={plan.docLink}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl text-[11px] font-bold transition-all duration-200 shadow-sm hover:shadow hover:gap-2"
+                        className="inline-flex items-center gap-1.5 px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl text-xs font-bold transition-all duration-200 shadow-sm hover:shadow hover:gap-2"
                       >
                         View Doc <ExternalLink className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                       </a>
                     </div>
                   </div>
-                ))}
+                );
+              })}
               </div>
             )}
           </div>
@@ -363,6 +412,20 @@ export default function ProjectPlansPage() {
                   className="w-full px-3 py-2 border border-zinc-200 rounded-lg text-xs focus:ring-1 focus:ring-zinc-950 focus:outline-none"
                   placeholder="e.g. https://docs.google.com/document/d/... or Notion link"
                 />
+              </div>
+
+              <div>
+                <label className="block text-zinc-600 font-bold mb-1.5">Status *</label>
+                <select
+                  value={formData.status}
+                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                  className="w-full px-3 py-2 border border-zinc-200 rounded-lg text-xs focus:ring-1 focus:ring-zinc-950 focus:outline-none bg-white"
+                >
+                  <option value="Planning">Planning</option>
+                  <option value="Working">Working</option>
+                  <option value="Implementation">Implementation</option>
+                  <option value="Completed">Completed</option>
+                </select>
               </div>
 
               <div className="border-t border-zinc-200 pt-4 flex justify-end gap-2.5">

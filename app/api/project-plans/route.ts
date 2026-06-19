@@ -30,23 +30,30 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { name, description, docLink } = body;
+    const { name, description, docLink, status } = body;
 
     if (!name || !description || !docLink) {
       return NextResponse.json({ error: "Name, description, and document link are required." }, { status: 400 });
+    }
+
+    const validStatuses = ["Planning", "Working", "Implementation", "Completed"];
+    let finalStatus = "Planning";
+    if (status && validStatuses.includes(status.trim())) {
+      finalStatus = status.trim();
     }
 
     const plan = await ProjectPlan.create({
       name: name.trim(),
       description: description.trim(),
       docLink: docLink.trim(),
+      status: finalStatus,
     });
 
     await AuditLog.create({
       userEmail,
       userName,
       action: "Created Project Plan",
-      details: `Created project plan document "${plan.name}" with link: ${plan.docLink}.`,
+      details: `Created project plan document "${plan.name}" with status "${plan.status}" and link: ${plan.docLink}.`,
     });
 
     return NextResponse.json(plan, { status: 201 });

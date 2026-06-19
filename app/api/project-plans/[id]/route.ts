@@ -36,7 +36,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
     const { id } = await params;
     const body = await request.json();
-    const { name, description, docLink } = body;
+    const { name, description, docLink, status } = body;
 
     const plan = await ProjectPlan.findById(id);
     if (!plan) {
@@ -47,13 +47,18 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     if (description) plan.description = description.trim();
     if (docLink) plan.docLink = docLink.trim();
 
+    const validStatuses = ["Planning", "Working", "Implementation", "Completed"];
+    if (status && validStatuses.includes(status.trim())) {
+      plan.status = status.trim();
+    }
+
     await plan.save();
 
     await AuditLog.create({
       userEmail,
       userName,
       action: "Updated Project Plan",
-      details: `Updated project plan document "${plan.name}".`,
+      details: `Updated project plan document "${plan.name}" (Status: ${plan.status}).`,
     });
 
     return NextResponse.json(plan);

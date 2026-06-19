@@ -5,6 +5,20 @@
   --foreground: #171717;
 }
 
+@theme {
+  --color-zinc-50: #f8fafc;
+  --color-zinc-100: #f1f5f9;
+  --color-zinc-200: #e2e8f0;
+  --color-zinc-300: #bae6fd;
+  --color-zinc-400: #94a3b8;
+  --color-zinc-500: #64748b;
+  --color-zinc-600: #334155;
+  --color-zinc-700: #0f172a;
+  --color-zinc-800: #0284c7;
+  --color-zinc-900: #0ea5e9;
+  --color-zinc-950: #0369a1;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -17,4 +31,3 @@ body {
   color: var(--foreground);
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 }
-

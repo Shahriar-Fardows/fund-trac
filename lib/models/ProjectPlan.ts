@@ -5,6 +5,13 @@ const ProjectPlanSchema = new Schema(
     name: { type: String, required: true, trim: true },
     description: { type: String, required: true, trim: true },
     docLink: { type: String, required: true, trim: true },
+    status: {
+      type: String,
+      required: true,
+      default: "Planning",
+      enum: ["Planning", "Working", "Implementation", "Completed"],
+      trim: true,
+    },
   },
   { timestamps: true }
 );
