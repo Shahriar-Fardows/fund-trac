@@ -16,8 +16,8 @@ function heading(p: ProposalLike): string {
 }
 
 export function buildProposalEmailHtml(p: ProposalLike, signUrl: string): string {
-  const companyName = process.env.COMPANY_NAME || "TEACHFOSYS";
-  const emailAddress = process.env.CEO_EMAIL || "info@teachfosys.com";
+  const companyName = process.env.COMPANY_NAME || "Shahriar";
+  const emailAddress = process.env.CEO_EMAIL || "info@shahriar.com";
   // Clean up domain if it doesn't end with .com/.net/etc in env
   const displayEmail = emailAddress.includes("@") && !emailAddress.includes(".com") && !emailAddress.includes(".org") && !emailAddress.includes(".net")
     ? `${emailAddress}.com`
@@ -210,7 +210,7 @@ export function buildSignNotificationHtml(
           ${p.signerIp ? `<tr><td style="padding:4px 0;color:#71717a;">IP</td><td style="padding:4px 0;text-align:right;color:#18181b;">${escapeHtml(p.signerIp)}</td></tr>` : ""}
         </table>
       </div>
-      <p style="color:#a1a1aa;font-size:12px;margin:16px 0 0;">The income has been auto-recorded in Teachfosys Finance.</p>
+      <p style="color:#a1a1aa;font-size:12px;margin:16px 0 0;">The income has been auto-recorded in Shahriar Finance.</p>
     </div>
   </div>`;
 }
@@ -225,7 +225,7 @@ export function buildAdminCopyEmailHtml(
   signedAt: Date,
   baseUrl: string
 ): string {
-  const companyName = process.env.COMPANY_NAME || "TEACHFOSYS";
+  const companyName = process.env.COMPANY_NAME || "Shahriar";
   return `
   <div style="background-color: #f8fafc; padding: 40px 20px; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
     <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05); border: 1px solid #e2e8f0;">
@@ -306,7 +306,7 @@ export function buildAdminCopyEmailHtml(
       <!-- Footer -->
       <div style="background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 20px 24px; text-align: center;">
         <p style="margin: 0; font-size: 12px; color: #94a3b8;">
-          This is an automated system notification from Teachfosys Finance.
+          This is an automated system notification from Shahriar Finance.
         </p>
       </div>
     </div>

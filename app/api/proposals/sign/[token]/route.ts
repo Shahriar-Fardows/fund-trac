@@ -120,7 +120,7 @@ export async function POST(request: Request, { params }: { params: Promise<any> 
       }
 
       // Send copy to admin/CEO
-      const copyEmail = process.env.PROPOSAL_COPY_EMAIL || "shahriar@teachfosys.com";
+      const copyEmail = process.env.PROPOSAL_COPY_EMAIL || "shahriar@shahriar.com";
       const baseUrl = getBaseUrl(request);
       try {
         await sendEmail({

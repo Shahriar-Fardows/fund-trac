@@ -79,7 +79,7 @@ export async function buildSignedPdfBase64(p: SignInfo): Promise<string> {
     color: rgb(24 / 255, 24 / 255, 27 / 255), // Zinc 900
   });
 
-  page.drawText("TEACHFOSYS", {
+  page.drawText("Shahriar", {
     x: M,
     y: H - 42,
     size: 16,
@@ -263,7 +263,7 @@ export async function buildSignedPdfBase64(p: SignInfo): Promise<string> {
   });
 
   const ceoName = process.env.CEO_NAME || "Shahriar Fardows";
-  const companyName = process.env.COMPANY_NAME || "TEACHFOSYS";
+  const companyName = process.env.COMPANY_NAME || "Shahriar";
 
   drawLabelVal(rColX + 12, y + 235, "Representative", ceoName);
   drawLabelVal(rColX + 12, y + 217, "Title", `CEO, ${companyName}`);
@@ -344,7 +344,7 @@ export async function buildSignedPdfBase64(p: SignInfo): Promise<string> {
     color: rgb(161 / 255, 161 / 255, 170 / 255), // Zinc 400
   });
 
-  page.drawText("TEACHFOSYS · Teachfosys Finance", {
+  page.drawText("Shahriar · Shahriar Finance", {
     x: W - M - 150,
     y: 36,
     size: 7.5,

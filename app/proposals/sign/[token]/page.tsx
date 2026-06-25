@@ -229,7 +229,7 @@ export default function SignProposalPage() {
             )}
           </div>
 
-          <p className="text-xs text-zinc-450 tracking-wider">Teachfosys Finance</p>
+          <p className="text-xs text-zinc-450 tracking-wider">Shahriar Finance</p>
         </div>
       </div>
     );
@@ -248,7 +248,7 @@ export default function SignProposalPage() {
               You have rejected this proposal. The sender has been notified.
             </p>
           </div>
-          <p className="text-xs text-zinc-400">Teachfosys Finance</p>
+          <p className="text-xs text-zinc-400">Shahriar Finance</p>
         </div>
       </div>
     );
@@ -265,7 +265,7 @@ export default function SignProposalPage() {
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 bg-zinc-900 text-white rounded-lg flex items-center justify-center shadow-md"><Building className="w-5 h-5" /></div>
             <div>
-              <span className="font-bold text-lg text-zinc-900">TEACHFOSYS</span>
+              <span className="font-bold text-lg text-zinc-900">Shahriar</span>
               <span className="block text-[10px] text-zinc-400 font-semibold tracking-wider uppercase">Project Proposal</span>
             </div>
           </div>
@@ -401,7 +401,7 @@ export default function SignProposalPage() {
               </div>
             </div>
 
-            <p className="text-center text-xs text-zinc-400">Teachfosys Finance</p>
+            <p className="text-center text-xs text-zinc-400">Shahriar Finance</p>
           </div>
         </div>
       </div>

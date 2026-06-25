@@ -32,12 +32,12 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setSelectedMonth(currentMonth);
 
     // Retrieve session from localStorage
-    const storedUser = localStorage.getItem("teachfosys_finance_user");
+    const storedUser = localStorage.getItem("shahriar_finance_user");
     if (storedUser) {
       try {
         setUser(JSON.parse(storedUser));
       } catch (e) {
-        localStorage.removeItem("teachfosys_finance_user");
+        localStorage.removeItem("shahriar_finance_user");
       }
     }
     setLoading(false);
@@ -58,7 +58,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       const userData = await response.json();
       setUser(userData);
-      localStorage.setItem("teachfosys_finance_user", JSON.stringify(userData));
+      localStorage.setItem("shahriar_finance_user", JSON.stringify(userData));
       router.push("/dashboard");
       return true;
     } catch (error) {
@@ -69,7 +69,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem("teachfosys_finance_user");
+    localStorage.removeItem("shahriar_finance_user");
     router.push("/login");
   };
 

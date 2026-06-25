@@ -12,7 +12,7 @@ export async function PUT(
     const { id } = await params;
 
     const role = request.headers.get("x-user-role");
-    const userEmail = request.headers.get("x-user-email") || "unknown@teachfosys.com";
+    const userEmail = request.headers.get("x-user-email") || "unknown@shahriar.com";
     const userName = request.headers.get("x-user-name") || "System User";
 
     if (role !== "admin") {
@@ -90,7 +90,7 @@ export async function DELETE(
     const { id } = await params;
 
     const role = request.headers.get("x-user-role");
-    const userEmail = request.headers.get("x-user-email") || "unknown@teachfosys.com";
+    const userEmail = request.headers.get("x-user-email") || "unknown@shahriar.com";
     const userName = request.headers.get("x-user-name") || "System User";
 
     if (role !== "admin") {

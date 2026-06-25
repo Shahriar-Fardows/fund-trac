@@ -18,9 +18,9 @@ export async function DELETE(request: Request) {
     const role = request.headers.get("x-user-role");
     const userEmail = request.headers.get("x-user-email");
 
-    if (role !== "admin" || userEmail !== "shahriar@teachfosys.com") {
+    if (role !== "admin" || userEmail !== "shahriar@shahriar.com") {
       return NextResponse.json(
-        { error: "Unauthorized. Only shahriar@teachfosys.com can delete audit logs." },
+        { error: "Unauthorized. Only shahriar@shahriar.com can delete audit logs." },
         { status: 403 }
       );
     }

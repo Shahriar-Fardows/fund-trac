@@ -24,7 +24,7 @@ export async function sendEmail({ to, subject, html, attachments }: SendEmailArg
     throw new Error("RESEND_API_KEY / RESEND_DOMAIN are not configured.");
   }
 
-  const fromName = process.env.COMPANY_NAME || "teachfosys";
+  const fromName = process.env.COMPANY_NAME || "shahriar";
 
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",

@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     const existing = await Client.findOne({ email: cleanEmail });
     if (existing) {
       return NextResponse.json({
-        error: "This email is already registered. If you wish to update your details or check your status, please contact support at info@teachfosys.com."
+        error: "This email is already registered. If you wish to update your details or check your status, please contact support at info@shahriar.com."
       }, { status: 400 });
     }
 

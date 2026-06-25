@@ -24,7 +24,7 @@ export default function AuditLogsPage() {
   const [actionError, setActionError] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
-  const canDelete = user?.email === "shahriar@teachfosys.com";
+  const canDelete = user?.email === "shahriar@shahriar.com";
   const colSpanCount = canDelete ? 6 : 4;
 
   const handleDeleteLog = async (id: string) => {

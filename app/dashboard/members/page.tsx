@@ -153,7 +153,7 @@ export default function MembersPage() {
           {/* Header */}
           <div className="flex items-center justify-between">
             <p className="text-xs text-zinc-500 font-medium">
-              Manage who has access to Teachfosys Finance
+              Manage who has access to Shahriar Finance
             </p>
             <button
               onClick={() => { setShowForm(!showForm); setError(""); }}

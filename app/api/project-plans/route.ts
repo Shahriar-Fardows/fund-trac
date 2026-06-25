@@ -22,7 +22,7 @@ export async function POST(request: Request) {
   try {
     await dbConnect();
     const role = request.headers.get("x-user-role");
-    const userEmail = request.headers.get("x-user-email") || "unknown@teachfosys.com";
+    const userEmail = request.headers.get("x-user-email") || "unknown@shahriar.com";
     const userName = request.headers.get("x-user-name") || "System User";
 
     if (role !== "admin") {

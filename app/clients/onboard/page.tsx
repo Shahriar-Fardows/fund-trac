@@ -90,7 +90,7 @@ export default function ClientOnboardPage() {
           </h1>
           
           <p className="text-xs md:text-sm text-zinc-400 mt-4 max-w-md leading-relaxed">
-            Welcome to the TEACHFOSYS onboarding portal. Share your project requirements on the right to auto-create your client profile and project workspace.
+            Welcome to the Shahriar onboarding portal. Share your project requirements on the right to auto-create your client profile and project workspace.
           </p>
         </div>
 
@@ -135,9 +135,9 @@ export default function ClientOnboardPage() {
 
         {/* Content Footer */}
         <div className="relative z-10 pt-4 border-t border-zinc-900 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-[10px] text-zinc-550 font-bold uppercase tracking-wider">
-          <span>TEACHFOSYS Agency Platform</span>
+          <span>Shahriar Agency Platform</span>
           <span className="text-zinc-500 font-semibold normal-case">
-            Need help? <a href="mailto:info@teachfosys.com" className="text-emerald-400 hover:underline">info@teachfosys.com</a>
+            Need help? <a href="mailto:info@shahriar.com" className="text-emerald-400 hover:underline">info@shahriar.com</a>
           </span>
         </div>
       </div>
@@ -160,7 +160,7 @@ export default function ClientOnboardPage() {
               </h1>
               
               <p className="text-xs md:text-sm text-zinc-500 mt-4 leading-relaxed">
-                Thank you for choosing TEACHFOSYS. We have successfully registered your company profile and services request in our database.
+                Thank you for choosing Shahriar. We have successfully registered your company profile and services request in our database.
               </p>
 
               <div className="bg-zinc-50 border border-zinc-150 rounded-2xl p-5 my-7 text-left space-y-2.5 max-w-md mx-auto">
